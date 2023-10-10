@@ -1,12 +1,18 @@
 const express = require("express");
 const mongoose = require("mongoose");
 require("dotenv").config()
+const cors = require('cors');
 //Import Routes
 const helloRoutes = require("./routes/helloRoutes");
 const userRoutes = require("./routes/userRoutes");
 
 // Express app
 const app = express();
+
+// OR, allow only specific origins
+app.use(cors({
+  origin: 'http://localhost:3000' // replace this with your React app's URL
+}));
 
 // Middleware
 app.use(express.json())
