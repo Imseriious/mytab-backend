@@ -2,9 +2,12 @@ const express = require("express");
 const mongoose = require("mongoose");
 require("dotenv").config()
 const cors = require('cors');
+
 //Import Routes
-const helloRoutes = require("./routes/helloRoutes");
 const userRoutes = require("./routes/userRoutes");
+const bookmarkRoutes = require('./routes/bookmarkRoutes');
+const folderRoutes = require('./routes/folderRoutes');
+const categoryRoutes = require('./routes/categoryRoutes');
 
 // Express app
 const app = express();
@@ -28,8 +31,11 @@ mongoose
 
 
 // Use routes
-app.use("/api", helloRoutes);
 app.use("/api/user", userRoutes);
+app.use('/api/bookmarks', bookmarkRoutes);
+app.use('/api/folders', folderRoutes);
+app.use('/api/categories', categoryRoutes);
+
 
 
 // Start the server
