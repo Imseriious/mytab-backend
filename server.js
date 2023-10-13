@@ -8,6 +8,7 @@ const userRoutes = require("./routes/userRoutes");
 const bookmarkRoutes = require('./routes/bookmarkRoutes');
 const folderRoutes = require('./routes/folderRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
+const favoriteRoutes = require('./routes/favoriteRoutes');
 
 // Express app
 const app = express();
@@ -35,6 +36,7 @@ app.use("/api/user", userRoutes);
 app.use('/api/bookmarks', bookmarkRoutes);
 app.use('/api/folders', folderRoutes);
 app.use('/api/categories', categoryRoutes);
+app.use('/api/favorites', favoriteRoutes);
 
 
 
