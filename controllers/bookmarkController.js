@@ -35,7 +35,7 @@ const addBookmark = async (req, res) => {
 
 const getUserBookmarks = async (req, res) => {
   try {
-    const bookmarks = await Bookmark.find({ userId: req.user._id });
+    const bookmarks = await Bookmark.find({ userId: req.user._id }).sort({ createdAt: -1 });
     const bookmarksResponse = {
       length: bookmarks.length,
       bookmarks: bookmarks,
