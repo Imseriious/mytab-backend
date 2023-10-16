@@ -7,7 +7,7 @@ const addFavorite = async (req, res) => {
   try {
     let { bookmarkId, name, url } = req.body;
     const iconUrl = getBookmarkIconUrl(url);
-    const description = "Missing logic";
+    const description = "Missing description logic";
 
     // 2. Checking and Creating Bookmark if it doesn't exist
     if (!bookmarkId) {
@@ -50,7 +50,9 @@ const addFavorite = async (req, res) => {
 // 2. Retrieving a User's Favorites
 const getUserFavorites = async (req, res) => {
   try {
-    const favorites = await Favorite.find({ userId: req.user._id });
+    const favorites = await Favorite.find({ userId: req.user._id }).sort({
+      createdAt: -1,
+    });
     res.status(200).json(favorites);
   } catch (error) {
     console.error(error);
@@ -89,9 +91,14 @@ const updateFavorite = async (req, res) => {
     const { name, url } = req.body;
 
     const favorite = await Favorite.findById(favoriteId);
+    const relatedBookmark = await Bookmark.findById(favorite.bookmarkId);
 
     if (!favorite) {
       return res.status(404).json({ error: "Favorite not found" });
+    }
+
+    if (!relatedBookmark) {
+      console.log("Related bookmark for this favorite was not found");
     }
 
     if (String(favorite.userId) !== String(req.user._id)) {
@@ -100,9 +107,16 @@ const updateFavorite = async (req, res) => {
         .json({ error: "Not authorized to update this favorite" });
     }
 
-    if (name) favorite.name = name;
-    if (url) favorite.url = url;
+    if (name) {
+      favorite.name = name;
+      relatedBookmark.name = name;
+    }
+    if (url) {
+      favorite.url = url;
+      relatedBookmark.url = url;
+    }
 
+    await relatedBookmark.save();
     await favorite.save();
 
     res
