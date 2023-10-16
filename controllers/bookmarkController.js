@@ -7,12 +7,12 @@ const addBookmark = async (req, res) => {
 
   const iconUrl = getBookmarkIconUrl(url);
 
-  if (folderId) {
-    folderId = null;
-  }
-
   if (!name || !url) {
     return res.status(400).json({ error: "Name and URL are required" });
+  }
+
+  if (folderId === "none") {
+    folderId === null;
   }
 
   try {
@@ -35,7 +35,9 @@ const addBookmark = async (req, res) => {
 
 const getUserBookmarks = async (req, res) => {
   try {
-    const bookmarks = await Bookmark.find({ userId: req.user._id }).sort({ createdAt: -1 });
+    const bookmarks = await Bookmark.find({ userId: req.user._id }).sort({
+      createdAt: -1,
+    });
     const bookmarksResponse = {
       length: bookmarks.length,
       bookmarks: bookmarks,
@@ -88,7 +90,9 @@ const updateBookmark = async (req, res) => {
 
     if (name) bookmark.name = name;
     if (url) bookmark.url = url;
-    if (folderId) bookmark.folderId = folderId;
+    if (folderId) {
+      bookmark.folderId = folderId === "none" ? null : folderId;
+    }
 
     await bookmark.save();
 
