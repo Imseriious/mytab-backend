@@ -1,13 +1,24 @@
 const Favorite = require("../models/favoriteModel");
 const Bookmark = require("../models/bookmarkModel");
-const getBookmarkIconUrl = require("../utils");
+const getBookmarkIconUrl = require("../utils/getFaviconFromUrl");
+const getWebsiteInfo = require("../utils/getWebsiteInfo");
 
 // 1. Creating a Favorite
 const addFavorite = async (req, res) => {
   try {
     let { bookmarkId, name, url } = req.body;
     const iconUrl = getBookmarkIconUrl(url);
-    const description = "Missing description logic";
+
+    let websiteDescription = await getWebsiteInfo(url);
+
+    if (!name) {
+      name = websiteDescription.title;
+    }
+
+    const description =
+      websiteDescription.description ||
+      websiteDescription.title ||
+      "Missing description ... ";
 
     // 2. Checking and Creating Bookmark if it doesn't exist
     if (!bookmarkId) {

@@ -1,19 +1,30 @@
 const Bookmark = require("../models/bookmarkModel");
-const getBookmarkIconUrl = require("../utils");
+const getBookmarkIconUrl = require("../utils/getFaviconFromUrl");
+const getWebsiteInfo = require("../utils/getWebsiteInfo");
 
 const addBookmark = async (req, res) => {
-  const { name, url, folderId } = req.body;
-  const description = "missing description logic";
+  let { name, url, folderId } = req.body;
 
-  const iconUrl = getBookmarkIconUrl(url);
-
-  if (!name || !url) {
-    return res.status(400).json({ error: "Name and URL are required" });
+  if (!url) {
+    return res.status(400).json({ error: "URL are required" });
   }
 
   if (folderId === "none") {
     folderId === null;
   }
+
+  const iconUrl = getBookmarkIconUrl(url);
+
+  let websiteDescription = await getWebsiteInfo(url);
+  
+  if (!name) {
+    name = websiteDescription.title;
+  }
+
+  const description =
+    websiteDescription.description ||
+    websiteDescription.title ||
+    "Missing description ... ";
 
   try {
     const bookmark = new Bookmark({
