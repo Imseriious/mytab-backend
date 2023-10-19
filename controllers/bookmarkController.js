@@ -3,7 +3,7 @@ const getBookmarkIconUrl = require("../utils/getFaviconFromUrl");
 const getWebsiteInfo = require("../utils/getWebsiteInfo");
 
 const addBookmark = async (req, res) => {
-  let { name, url, folderId } = req.body;
+  let { name, url, folderId, faviconUrl } = req.body;
 
   if (!url) {
     return res.status(400).json({ error: "URL are required" });
@@ -13,10 +13,15 @@ const addBookmark = async (req, res) => {
     folderId === null;
   }
 
-  const iconUrl = getBookmarkIconUrl(url);
+  let iconUrl;
+  if (!faviconUrl) {
+    iconUrl = getBookmarkIconUrl(url);
+  } else {
+    iconUrl = faviconUrl;
+  }
 
   let websiteDescription = await getWebsiteInfo(url);
-  
+
   if (!name) {
     name = websiteDescription.title;
   }

@@ -15,7 +15,7 @@ const app = express();
 
 // OR, allow only specific origins
 app.use(cors({
-  origin: 'http://localhost:3000' // replace this with your React app's URL
+  origin: ['http://localhost:3000', 'chrome-extension://pkbdodflcdblhhhhfpnibfaibbgnhgpb'] // replace this with your React app's URL
 }));
 
 // Middleware
