@@ -7,24 +7,25 @@ const getWebsiteInfo = require("../utils/getWebsiteInfo");
 const addFavorite = async (req, res) => {
   try {
     let { bookmarkId, name, url } = req.body;
-    const iconUrl = getBookmarkIconUrl(url);
 
-    let websiteDescription = await getWebsiteInfo(url);
-
-    if (!name) {
-      name = websiteDescription.title;
-    }
-
-    const description =
-      websiteDescription.description ||
-      websiteDescription.title ||
-      "Missing description ... ";
+    let iconUrl;
+    let description;
+    let bookmarkName = name;
 
     // 2. Checking and Creating Bookmark if it doesn't exist
     if (!bookmarkId) {
+      let websiteDescription = await getWebsiteInfo(url);
+      iconUrl = getBookmarkIconUrl(url);
+      description =
+        websiteDescription.description ||
+        websiteDescription.title ||
+        "Missing description ... ";
+      if (!name) {
+        bookmarkName = websiteDescription.title;
+      }
       const newBookmark = new Bookmark({
         userId: req.user._id,
-        name,
+        name: bookmarkName,
         url,
         iconUrl,
         description,
@@ -37,6 +38,10 @@ const addFavorite = async (req, res) => {
         return res
           .status(404)
           .json({ error: "Provided bookmarkId does not exist" });
+      } else {
+        iconUrl = existingBookmark.iconUrl;
+        description = existingBookmark.description;
+        bookmarkName = existingBookmark.name;
       }
     }
 
@@ -44,7 +49,7 @@ const addFavorite = async (req, res) => {
     const favorite = new Favorite({
       userId: req.user._id,
       bookmarkId,
-      name,
+      name: bookmarkName,
       description,
       url,
       iconUrl,
