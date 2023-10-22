@@ -1,7 +1,10 @@
 const express = require("express");
 const mongoose = require("mongoose");
-require("dotenv").config()
+
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
+
+require("dotenv").config()
 
 //Import Routes
 const userRoutes = require("./routes/userRoutes");
@@ -17,6 +20,9 @@ const app = express();
 app.use(cors({
   origin: ['http://localhost:3000', 'chrome-extension://pkbdodflcdblhhhhfpnibfaibbgnhgpb'] // replace this with your React app's URL
 }));
+
+// Cookie parser
+app.use(cookieParser());
 
 // Middleware
 app.use(express.json())

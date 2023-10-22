@@ -6,7 +6,8 @@ const {
     createCategory,
     getUserCategories,
     deleteCategory,
-    updateCategory
+    updateCategory,
+    getCategoryFolders
 } = require('../controllers/categoryController');
 
 // All routes will require authentication
@@ -17,6 +18,9 @@ router.post('/', createCategory);
 
 // Get all categories of the user
 router.get('/', getUserCategories);
+
+// Get all categories of the user
+router.get('/:id', getCategoryFolders);
 
 // Delete a specific category by ID
 router.delete('/:id', deleteCategory);
