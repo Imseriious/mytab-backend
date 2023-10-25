@@ -17,13 +17,16 @@ const wallpapersRoutes = require("./routes/wallpapersRoutes");
 // Express app
 const app = express();
 
+const allowedOriginas = [
+  "http://localhost:3000",
+  "chrome-extension://pkbdodflcdblhhhhfpnibfaibbgnhgpb",
+  "https://mytab-frontend.onrender.com/",
+];
+
 // OR, allow only specific origins
 app.use(
   cors({
-    origin: [
-      "http://localhost:3000",
-      "chrome-extension://pkbdodflcdblhhhhfpnibfaibbgnhgpb",
-    ], // replace this with your React app's URL
+    origin: allowedOriginas, // replace this with your React app's URL
     credentials: true,
   })
 );

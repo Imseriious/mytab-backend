@@ -69,7 +69,6 @@ const changeWallpaperCollection = async (req, res) => {
       res.status(404).json({message: "User not found"})
     }
     if (collectionName) user.preferences.wallpaperCollection = collectionName;
-    console.log("idk, ", collectionName, user)
     await user.save();
     res.status(200).json({ message: "Wallpapers updated" });
 
