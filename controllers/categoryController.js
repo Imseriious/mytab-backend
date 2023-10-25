@@ -46,11 +46,20 @@ const deleteCategory = async (req, res) => {
         .json({ error: "Not authorized to delete this category" });
     }
 
+    // Find and delete all folders associated with this category
+    await Folder.deleteMany({ categoryId: categoryId });
+
     await category.deleteOne();
-    res.status(200).json({ message: "Category deleted successfully" });
+    res
+      .status(200)
+      .json({
+        message: "Category and associated folders deleted successfully",
+      });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Failed to delete the category" });
+    res
+      .status(500)
+      .json({ error: "Failed to delete the category and associated folders" });
   }
 };
 
@@ -99,7 +108,7 @@ const getCategoryFolders = async (req, res) => {
     }
 
     const categoryFolders = await Folder.find({ categoryId: categoryId });
-    
+
     res
       .status(200)
       .json({ length: categoryFolders.length, folders: categoryFolders });
@@ -114,5 +123,5 @@ module.exports = {
   getUserCategories,
   deleteCategory,
   updateCategory,
-  getCategoryFolders
+  getCategoryFolders,
 };

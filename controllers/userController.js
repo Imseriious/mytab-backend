@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 
 // Function to create Access Token
 const createAccessToken = (_id) => {
-  return jwt.sign({ _id }, process.env.SECRET, { expiresIn: "15m" });
+  return jwt.sign({ _id }, process.env.SECRET, { expiresIn: "15m" }); //TODO, maybe longer
 };
 
 // Function to create Refresh Token
@@ -14,7 +14,10 @@ const createRefreshToken = (_id) => {
 // Refresh token
 const refreshUserToken = async (req, res) => {
   const refreshToken = req.cookies.refreshToken;
-  if (!refreshToken) return res.status(401).send("Access Denied - Refresh token cookie not found");
+  if (!refreshToken)
+    return res
+      .status(401)
+      .send("Access Denied - Refresh token cookie not found");
 
   jwt.verify(refreshToken, process.env.REFRESH_SECRET, (err, user) => {
     if (err) return res.status(403).send("Invalid Refresh Token");
@@ -32,7 +35,6 @@ const loginUser = async (req, res) => {
     const user = await User.login(email, password);
     const accessToken = createAccessToken(user._id);
     const refreshToken = createRefreshToken(user._id);
-
     // Send refresh token as a cookie
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
@@ -40,7 +42,10 @@ const loginUser = async (req, res) => {
       sameSite: "None",
     });
 
-    res.status(200).json({ email, token: accessToken });
+
+    res
+      .status(200)
+      .json({ email, token: accessToken, preferences: user.preferences });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
@@ -54,6 +59,7 @@ const signupUser = async (req, res) => {
     const user = await User.signup(email, password);
     const accessToken = createAccessToken(user._id);
     const refreshToken = createRefreshToken(user._id);
+    const userPreferences = user.preferences;
 
     // Send refresh token as a cookie
     res.cookie("refreshToken", refreshToken, {
@@ -62,7 +68,7 @@ const signupUser = async (req, res) => {
       sameSite: "None",
     });
 
-    res.status(200).json({ email, token: accessToken });
+    res.status(200).json({ email, token: accessToken, preferences: userPreferences });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
