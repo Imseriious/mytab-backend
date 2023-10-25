@@ -14,6 +14,12 @@ const userSchema = new Schema({
     type: String,
     required: true,
   },
+  preferences: {
+    wallpaperCollection: {
+      type: String,
+      default: 'all'
+    },
+  },
 });
 
 // Static signup method
@@ -40,7 +46,10 @@ userSchema.statics.signup = async function (email, password) {
   const salt = await bcrypt.genSalt(10);
   const hash = await bcrypt.hash(password, salt);
 
-  const user = await this.create({ email, password: hash });
+  const user = await this.create({
+    email,
+    password: hash,
+  });
 
   return user;
 };
@@ -58,14 +67,13 @@ userSchema.statics.login = async function (email, password) {
     throw Error("Incorrect email");
   }
 
-  const match = await bcrypt.compare(password, user.password)
+  const match = await bcrypt.compare(password, user.password);
 
-  if(!match) {
-    throw Error("Incorrect password")
+  if (!match) {
+    throw Error("Incorrect password");
   }
 
-  return user
-
+  return user;
 };
 
 module.exports = mongoose.model("User", userSchema);
