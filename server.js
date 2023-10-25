@@ -20,7 +20,7 @@ const app = express();
 const allowedOriginas = [
   "http://localhost:3000",
   "chrome-extension://pkbdodflcdblhhhhfpnibfaibbgnhgpb",
-  "https://mytab-frontend.onrender.com/",
+  "https://mytab-frontend.onrender.com",
 ];
 
 // OR, allow only specific origins
