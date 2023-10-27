@@ -3,17 +3,18 @@ const getFaviconFromUrl = (url) => {
 
   function extractDomain(urlString) {
     try {
-      // Check if urlString starts with 'http' or 'https'. If not, prepend 'http://'.
+      // Check if urlString starts with 'http' or 'https'. If not, prepend 'https://'.
       if (!urlString.startsWith("http")) {
-        urlString = "http://" + urlString;
+        urlString = "https://" + urlString;
       }
 
       const url = new URL(urlString);
-      const hostname = url.hostname;
+      let hostname = url.hostname;
 
-      // Match www.whatever.TLD where TLD can be 2 to 10 characters long
-      const match = hostname.match(/(?:www\.)?[\w-]+\.[a-z]{2,10}$/i);
-      return match ? match[0] : null;
+      // Remove 'www.' if it exists
+      hostname = hostname.replace(/^www\./, "");
+
+      return hostname;
     } catch (e) {
       console.error("Invalid URL:", urlString);
       return null;
@@ -21,7 +22,7 @@ const getFaviconFromUrl = (url) => {
   }
 
   const urlDomain = extractDomain(url);
-  const iconUrl = `https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://${urlDomain}&size=64`;
+  const iconUrl = `https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://${urlDomain}&size=64`;
   return iconUrl;
 };
 
