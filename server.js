@@ -13,6 +13,7 @@ const folderRoutes = require("./routes/folderRoutes");
 const categoryRoutes = require("./routes/categoryRoutes");
 const favoriteRoutes = require("./routes/favoriteRoutes");
 const wallpapersRoutes = require("./routes/wallpapersRoutes");
+const widgetQuotesRoutes = require("./routes/widgetQuotesRoutes");
 
 // Express app
 const app = express();
@@ -53,6 +54,7 @@ app.use("/api/folders", folderRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/favorites", favoriteRoutes);
 app.use("/api/wallpapers", wallpapersRoutes);
+app.use("/api/widgetquotes", widgetQuotesRoutes);
 
 // Start the server
 const port = process.env.PORT || 3000;
