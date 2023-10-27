@@ -107,14 +107,9 @@ const updateFavorite = async (req, res) => {
     const { name, url } = req.body;
 
     const favorite = await Favorite.findById(favoriteId);
-    const relatedBookmark = await Bookmark.findById(favorite.bookmarkId);
 
     if (!favorite) {
       return res.status(404).json({ error: "Favorite not found" });
-    }
-
-    if (!relatedBookmark) {
-      console.log("Related bookmark for this favorite was not found");
     }
 
     if (String(favorite.userId) !== String(req.user._id)) {
@@ -125,14 +120,11 @@ const updateFavorite = async (req, res) => {
 
     if (name) {
       favorite.name = name;
-      relatedBookmark.name = name;
     }
     if (url) {
       favorite.url = url;
-      relatedBookmark.url = url;
     }
 
-    await relatedBookmark.save();
     await favorite.save();
 
     res
