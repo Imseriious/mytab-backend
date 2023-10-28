@@ -1,4 +1,4 @@
-const WidgetQuote = require("../models/widgetQuoteModel");
+const WidgetQuote = require("../../models/widgets/widgetQuoteModel");
 
 // Helper function to get a random element from an array
 const getRandomElement = array => {
