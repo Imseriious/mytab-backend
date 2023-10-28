@@ -7,7 +7,7 @@ const getYoutubePopular = async () => {
     url: "https://youtube-trending.p.rapidapi.com/trending",
     params: {},
     headers: {
-      "X-RapidAPI-Key": "a4f0813135msh4995daeba316f20p16560cjsne1ea93c10bdd",
+      "X-RapidAPI-Key": "a4f0813135msh4995daeba316f20p16560cjsne1ea93c10bdd", //TODO env ?
       "X-RapidAPI-Host": "youtube-trending.p.rapidapi.com",
     },
   };
@@ -16,7 +16,7 @@ const getYoutubePopular = async () => {
     const response = await axios.request(options);
     // Filtering the first five elements and then formatting them
     const formattedOptions = response.data
-      .filter((option, i) => i < 5)
+      .filter((option, i) => i < 10)
       .map((option) => ({
         title: option.title,
         description: option.description,
@@ -44,23 +44,27 @@ const getPopularReddit = async () => {
 
   try {
     const response = await axios.request(options);
+    const posts = response.data.data.posts;
 
-    const formattedOptions = response.data.data.posts // Corrected here
-      .filter((option, i) => i < 5)
-      .map((option) => {
+    const formattedOptions = posts
+      .filter((post) => {
         // Extracting subreddit from permalink
-        const subredditMatch = option.permalink.match(/\/r\/(.*?)\//);
-        const subreddit = subredditMatch
-          ? subredditMatch[1]
-          : "Unknown subreddit";
-
+        const subredditMatch = post.permalink.match(/\/r\/(.*?)\//);
+        return subredditMatch; // Only allow posts with a subreddit
+      })
+      .map((post) => {
+        // Extracting subreddit from permalink
+        const subredditMatch = post.permalink.match(/\/r\/(.*?)\//);
+        const subreddit = subredditMatch[1];
         return {
-          title: option.title,
-          url: option.permalink,
+          title: post.title,
+          url: post.permalink,
           subReddit: subreddit,
-          thumbnail: option.thumbnail.url,
+          thumbnail: post.thumbnail.url,
         };
-      });
+      })
+      .slice(0, 10); // Only get the first 10 items after filtering
+
     return formattedOptions;
   } catch (error) {
     console.error(error);
