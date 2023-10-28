@@ -70,7 +70,7 @@ const changeWallpaperCollection = async (req, res) => {
     }
     if (collectionName) user.preferences.wallpaperCollection = collectionName;
     await user.save();
-    res.status(200).json({ message: "Wallpapers updated" });
+    res.status(200).json({ preferences: user.preferences });
 
   } catch (error) {
     res.status(400).json({ error: error.message });
