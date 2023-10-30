@@ -47,6 +47,7 @@ const loginUser = async (req, res) => {
       .status(200)
       .json({ email, token: accessToken, preferences: user.preferences });
   } catch (error) {
+    console.log(error)
     res.status(400).json({ error: error.message });
   }
 };
