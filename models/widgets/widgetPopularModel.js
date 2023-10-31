@@ -7,7 +7,7 @@ const youtubeContent = new mongoose.Schema({
   },
   description: {
     type: String,
-    required: true,
+    required: false,
   },
   url: {
     type: String,
