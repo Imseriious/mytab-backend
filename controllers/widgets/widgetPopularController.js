@@ -19,7 +19,6 @@ const getYoutubePopular = async () => {
       .filter((option, i) => i < 10)
       .map((option) => ({
         title: option.title,
-        description: option.description,
         url: option.videoUrl,
         thumbnail: option.thumbnails[1].url,
       }));
