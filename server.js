@@ -13,8 +13,12 @@ const folderRoutes = require("./routes/folderRoutes");
 const categoryRoutes = require("./routes/categoryRoutes");
 const favoriteRoutes = require("./routes/favoriteRoutes");
 const wallpapersRoutes = require("./routes/wallpapersRoutes");
+
+//Import Widget Routes
 const widgetQuotesRoutes = require("./routes/widgets/widgetQuotesRoutes");
 const widgetPopularRoutes = require("./routes/widgets/widgetPopularRoutes");
+const widgetWeatherRoutes = require("./routes/widgets/widgetWeatherRoutes");
+const widgetCryptoRoutes = require("./routes/widgets/widgetCryptoRoutes");
 
 // Express app
 const app = express();
@@ -55,8 +59,12 @@ app.use("/api/folders", folderRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/favorites", favoriteRoutes);
 app.use("/api/wallpapers", wallpapersRoutes);
+
+// Use Widget Routes
 app.use("/api/widgetquotes", widgetQuotesRoutes);
 app.use("/api/widgetPopular", widgetPopularRoutes);
+app.use("/api/widgetWeather", widgetWeatherRoutes);
+app.use("/api/widgetCrypto", widgetCryptoRoutes);
 
 // Start the server
 const port = process.env.PORT || 3000;
