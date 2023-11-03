@@ -23,6 +23,12 @@ const userSchema = new Schema({
       type: [String],
       default: ["BTC", "ETH"],
     },
+    weatherWidget: {
+      city: {
+        type: String,
+        default: "New york",
+      },
+    },
   },
 });
 

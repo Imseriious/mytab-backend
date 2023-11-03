@@ -28,6 +28,11 @@ const getCryptoLogo = async (ids) => {
 const getCryptoInfo = async (req, res) => {
   try {
     const selectedSymbols = req.query.selectedSymbols;
+
+    if (!selectedSymbols || selectedSymbols.length < 1) {
+      return res.status(200).json([]); // Send an empty array response and terminate function
+    }
+
     const topCryptoSymbolsString = topCryptoSymbols.join(",");
 
     // Check for existing data in the database
@@ -65,7 +70,6 @@ const getCryptoInfo = async (req, res) => {
         !cryptoData || cryptoData.coins.some((coin) => !coin.logo);
 
       if (shouldFetchLogos) {
-        console.log("Fetching logos...");
         logos = await getCryptoLogo(topCryptoSymbolsString);
       }
 
