@@ -14,10 +14,25 @@ const userSchema = new Schema({
     type: String,
     required: true,
   },
+  username: {
+    type: String,
+    required: false,
+    unique: true,
+  },
   preferences: {
     wallpaperCollection: {
       type: String,
-      default: 'all'
+      default: "all",
+    },
+    cryptoWidget: {
+      type: [String],
+      default: ["BTC", "ETH"],
+    },
+    weatherWidget: {
+      city: {
+        type: String,
+        default: "New york",
+      },
     },
   },
 });

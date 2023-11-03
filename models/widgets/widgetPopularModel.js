@@ -1,5 +1,12 @@
 const mongoose = require("mongoose");
 
+const tiktokSchema = new mongoose.Schema({
+  description: String,
+  title: String,
+  thumbnail: String,
+  url: String
+});
+
 const youtubeContent = new mongoose.Schema({
   title: {
     type: String,
@@ -7,7 +14,7 @@ const youtubeContent = new mongoose.Schema({
   },
   description: {
     type: String,
-    required: true,
+    required: false,
   },
   url: {
     type: String,
@@ -52,6 +59,9 @@ const widgetPopularSchema = new mongoose.Schema({
       type: [redditContent],
       required: true,
     },
+    tiktok: {
+      type: [tiktokSchema]
+    }
   },
 });
 

@@ -15,7 +15,7 @@ const addBookmark = async (req, res) => {
 
   let iconUrl;
   if (!faviconUrl) {
-    iconUrl = getBookmarkIconUrl(url);
+    iconUrl = await getBookmarkIconUrl(url);
   } else {
     iconUrl = faviconUrl;
   }
@@ -109,6 +109,7 @@ const updateBookmark = async (req, res) => {
     if (folderId) {
       bookmark.folderId = folderId === "none" ? null : folderId;
     }
+    bookmark.iconUrl = await getBookmarkIconUrl(url);
 
     await bookmark.save();
 

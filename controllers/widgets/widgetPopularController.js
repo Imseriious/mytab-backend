@@ -1,6 +1,44 @@
 const WidgetPopular = require("../../models/widgets/widgetPopularModel");
 const axios = require("axios");
 
+const getTikTokPopular = async () => {
+  const options = {
+    method: "GET",
+    url: "https://scraptik.p.rapidapi.com/search",
+    params: {
+      keyword: "viral",
+      count: "10",
+      offset: "0",
+      use_filters: "0",
+      publish_time: "7",
+      sort_type: "1", // bylikes
+    },
+    headers: {
+      "X-RapidAPI-Key": "a4f0813135msh4995daeba316f20p16560cjsne1ea93c10bdd",
+      "X-RapidAPI-Host": "scraptik.p.rapidapi.com",
+    },
+  };
+
+  try {
+    const response = await axios.request(options);
+    const formattedOptions = response.data.data.map(
+      (option) =>
+        option.aweme_info?.desc && //TODO Check if this really works
+        option.aweme_info?.search_desc &&
+        option.preload_img?.urls?.[1] &&
+        option.aweme_info?.share_url && {
+          description: option.aweme_info?.desc,
+          title: option.aweme_info?.search_desc,
+          thumbnail: option.preload_img?.urls?.[1],
+          url: option.aweme_info?.share_url,
+        }
+    );
+    return formattedOptions;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 const getYoutubePopular = async () => {
   const options = {
     method: "GET",
@@ -19,7 +57,6 @@ const getYoutubePopular = async () => {
       .filter((option, i) => i < 10)
       .map((option) => ({
         title: option.title,
-        description: option.description,
         url: option.videoUrl,
         thumbnail: option.thumbnails[1].url,
       }));
@@ -81,6 +118,7 @@ const getPopularToday = async (req, res) => {
     if (!widgetPopular || widgetPopular.updatedDate !== currentDate) {
       const youtubePopular = await getYoutubePopular();
       const redditPopular = await getPopularReddit();
+      const tiktokPopular = await getTikTokPopular(); // Getting TikTok popular items
 
       if (!widgetPopular) {
         widgetPopular = new WidgetPopular(); // If no record is found, create a new one
@@ -89,6 +127,7 @@ const getPopularToday = async (req, res) => {
       widgetPopular.updatedDate = currentDate;
       widgetPopular.apps.youtube = youtubePopular;
       widgetPopular.apps.reddit = redditPopular;
+      widgetPopular.apps.tiktok = tiktokPopular; // Including TikTok popular items
 
       await widgetPopular.save(); // Save the updated record in the database
     }
