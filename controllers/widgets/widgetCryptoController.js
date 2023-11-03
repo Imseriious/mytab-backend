@@ -1,6 +1,8 @@
 const axios = require("axios");
 const apiKey = "3b226db2-4211-4cf1-8aab-ca849a7d27d0";
 const User = require("../../models/userModel");
+const topCryptoSymbols = require("../../utils/coinMarketCapUtil");
+const CoinsCollection = require("../../models/widgets/widgetCryptoModel");
 
 const getCryptoLogo = async (ids) => {
   try {
@@ -26,44 +28,86 @@ const getCryptoLogo = async (ids) => {
 const getCryptoInfo = async (req, res) => {
   try {
     const selectedSymbols = req.query.selectedSymbols;
-    const selectedSymbolsString = selectedSymbols.join(",");
+    const topCryptoSymbolsString = topCryptoSymbols.join(",");
 
-    const url =
-      "https://pro-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest";
+    // Check for existing data in the database
+    let cryptoData = await CoinsCollection.findOne();
+    let formattedData;
+    const halfHourAgo = new Date(Date.now() - 30 * 60 * 1000);
 
-    const params = {
-      symbol: selectedSymbolsString,
-      convert: "USD",
-    };
+    if (cryptoData && cryptoData.lastFetched > halfHourAgo) {
+      // If data is up-to-date, filter for the requested symbols
+      formattedData = cryptoData.coins.filter((coin) =>
+        selectedSymbols.includes(coin.symbol)
+      );
+    } else {
+      console.log("Crypto data old or not present, fetching new data...");
 
-    const response = await axios.get(url, {
-      headers: {
-        "X-CMC_PRO_API_KEY": apiKey,
-      },
-      params: params,
-    });
-
-    // Processing data for multiple cryptocurrencies
-    const coinsData = response.data.data;
-    //const idsString = Object.keys(coinsData).join(","); // Join the keys into a comma-separated string
-    const logos = await getCryptoLogo(selectedSymbolsString);
-    const returnData = Object.keys(coinsData).map((key) => {
-      const coin = coinsData[key][0];
-      const coinPrice = coin.quote.USD.price;
-      const coinName = coin.name;
-
-      const coinLogo = logos[key][0].logo;
-
-      return {
-        symbol: key,
-        price: coinPrice,
-        name: coinName,
-        convert: params.convert,
-        logo: coinLogo,
+      const url =
+        "https://pro-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest";
+      const params = {
+        symbol: topCryptoSymbolsString,
+        convert: "USD",
       };
-    });
 
-    res.status(200).json(returnData)
+      const response = await axios.get(url, {
+        headers: {
+          "X-CMC_PRO_API_KEY": apiKey,
+        },
+        params: params,
+      });
+
+      const coinsData = response.data.data;
+
+      // Check if logos need to be fetched
+      let logos = {};
+      const shouldFetchLogos =
+        !cryptoData || cryptoData.coins.some((coin) => !coin.logo);
+
+      if (shouldFetchLogos) {
+        console.log("Fetching logos...");
+        logos = await getCryptoLogo(topCryptoSymbolsString);
+      }
+
+      formattedData = Object.keys(coinsData).map((key) => {
+        const coin = coinsData[key][0];
+        const coinPrice = coin.quote.USD.price;
+        const coinName = coin.name;
+        const coinSlug = coin.slug;
+        const coinLogo =
+          shouldFetchLogos && logos[key] && logos[key].length > 0
+            ? logos[key][0].logo
+            : cryptoData.coins.find((c) => c.symbol === key)?.logo || "";
+
+        return {
+          symbol: key,
+          price: coinPrice,
+          name: coinName,
+          convert: params.convert,
+          logo: coinLogo,
+          link: `https://coinmarketcap.com/currencies/${coinSlug}/`,
+        };
+      });
+
+      // Save new data to the database
+      if (cryptoData) {
+        // Update the record
+        cryptoData.coins = formattedData;
+        cryptoData.lastFetched = Date.now();
+        await cryptoData.save();
+      } else {
+        // Create a new record
+        cryptoData = new CoinsCollection({ coins: formattedData });
+        await cryptoData.save();
+      }
+    }
+
+    // Filter the formatted data to return only the selected symbols
+    const returnData = formattedData.filter((data) =>
+      selectedSymbols.includes(data.symbol)
+    );
+
+    res.status(200).json(returnData);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: error.message });
