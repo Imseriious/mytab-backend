@@ -4,6 +4,6 @@ const { getWallpapers, changeWallpaperCollection } = require('../controllers/wal
 const requireAuth = require('../middleware/requireAuth');
 
 router.get('/:id', requireAuth, getWallpapers);
-router.put('/:symbols', requireAuth, changeWallpaperCollection);
+router.put('/', requireAuth, changeWallpaperCollection);
 
 module.exports = router;

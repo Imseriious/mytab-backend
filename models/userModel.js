@@ -14,6 +14,11 @@ const userSchema = new Schema({
     type: String,
     required: true,
   },
+  username: {
+    type: String,
+    required: false,
+    unique: true,
+  },
   preferences: {
     wallpaperCollection: {
       type: String,

@@ -42,12 +42,16 @@ const loginUser = async (req, res) => {
       sameSite: "None",
     });
 
-
     res
       .status(200)
-      .json({ email, token: accessToken, preferences: user.preferences });
+      .json({
+        email,
+        token: accessToken,
+        preferences: user.preferences,
+        username: user.username,
+      });
   } catch (error) {
-    console.log(error)
+    console.log(error);
     res.status(400).json({ error: error.message });
   }
 };
@@ -69,10 +73,46 @@ const signupUser = async (req, res) => {
       sameSite: "None",
     });
 
-    res.status(200).json({ email, token: accessToken, preferences: userPreferences });
+    res
+      .status(200)
+      .json({ email, token: accessToken, preferences: userPreferences });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 };
 
-module.exports = { signupUser, loginUser, refreshUserToken };
+// SignUp User
+const updateUsername = async (req, res) => {
+  const { username } = req.body;
+
+  try {
+    if (!username) {
+      res.status(500).json({ error: "Username is required" });
+    }
+
+    if (username.length < 3) {
+      res.status(500).json({ error: "Username is too short" });
+    }
+
+    const userNameExists = await User.findOne({ username });
+
+    if (userNameExists) {
+      res.status(500).json({ error: "Username is already in use" });
+    }
+
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
+    }
+
+    user.username = username;
+    await user.save();
+
+    res.status(200).json({ message: "Username updated correctly" });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+module.exports = { signupUser, loginUser, refreshUserToken, updateUsername };

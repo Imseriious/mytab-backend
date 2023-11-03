@@ -15,7 +15,7 @@ const addFavorite = async (req, res) => {
     // 2. Checking and Creating Bookmark if it doesn't exist
     if (!bookmarkId) {
       let websiteDescription = await getWebsiteInfo(url);
-      iconUrl = getBookmarkIconUrl(url);
+      iconUrl = await getBookmarkIconUrl(url);
       description =
         websiteDescription.description ||
         websiteDescription.title ||
@@ -124,6 +124,8 @@ const updateFavorite = async (req, res) => {
     if (url) {
       favorite.url = url;
     }
+
+    favorite.iconUrl = await getBookmarkIconUrl(url);
 
     await favorite.save();
 
