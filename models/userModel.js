@@ -36,6 +36,9 @@ const userSchema = new Schema({
     },
     sidebarItemsOrder: {
       type: [String]
+    },
+    dockItemsOrder: {
+      type: [String]
     }
   },
 });

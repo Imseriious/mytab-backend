@@ -137,4 +137,35 @@ const updateSidebarItemsOrder = async (req, res) => {
   }
 };
 
-module.exports = { signupUser, loginUser, refreshUserToken, updateUsername, updateSidebarItemsOrder };
+// Update Dock Items Order
+const updateDockItemsOrder = async (req, res) => {
+  const { newOrder } = req.body;
+
+  try {
+    if (!newOrder) {
+      res.status(500).json({ error: "Order is required" });
+    }
+
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
+    }
+
+    user.preferences.dockItemsOrder = newOrder;
+    await user.save();
+
+    res.status(200).json({ preferences: user.preferences });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+module.exports = {
+  signupUser,
+  loginUser,
+  refreshUserToken,
+  updateUsername,
+  updateSidebarItemsOrder,
+  updateDockItemsOrder,
+};
