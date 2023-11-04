@@ -38,10 +38,10 @@ const loginUser = async (req, res) => {
     // Send refresh token as a cookie
     // Send refresh token as a cookie
     res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: true, // set to false if you're not using https
-      sameSite: "None", // set to 'Lax' or 'Strict' if possible for better security
-      maxAge: 60 * 60 * 24 * 60 * 1000, // 60 days
+      httpOnly: true, // The cookie is only accessible by the server
+      secure: true, // Ensure the cookie is sent over HTTPS
+      sameSite: "None", // The cookie is sent with every request when None, use 'Lax' or 'Strict' for CSRF protection
+      maxAge: 24 * 60 * 60 * 1000, // Set the cookie to expire after one day
     });
 
     res.status(200).json({
@@ -72,16 +72,14 @@ const signupUser = async (req, res) => {
     const refreshToken = createRefreshToken(user._id);
     const userPreferences = user.preferences;
 
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: true, // set to false if you're not using https
-      sameSite: "None", // set to 'Lax' or 'Strict' if possible for better security
-      maxAge: 60 * 60 * 24 * 60 * 1000, // 60 days
+    res.cookie("refreshToken", token, {
+      httpOnly: true, // The cookie is only accessible by the server
+      secure: true, // Ensure the cookie is sent over HTTPS
+      sameSite: "None", // The cookie is sent with every request when None, use 'Lax' or 'Strict' for CSRF protection
+      maxAge: 24 * 60 * 60 * 1000, // Set the cookie to expire after one day
     });
 
-    res
-      .status(200)
-      .json({ email, preferences: userPreferences });
+    res.status(200).json({ email, preferences: userPreferences });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
