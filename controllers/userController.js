@@ -42,14 +42,12 @@ const loginUser = async (req, res) => {
       sameSite: "None",
     });
 
-    res
-      .status(200)
-      .json({
-        email,
-        token: accessToken,
-        preferences: user.preferences,
-        username: user.username,
-      });
+    res.status(200).json({
+      email,
+      token: accessToken,
+      preferences: user.preferences,
+      username: user.username,
+    });
   } catch (error) {
     console.log(error);
     res.status(400).json({ error: error.message });
@@ -81,7 +79,7 @@ const signupUser = async (req, res) => {
   }
 };
 
-// SignUp User
+// Change username
 const updateUsername = async (req, res) => {
   const { username } = req.body;
 
@@ -115,4 +113,28 @@ const updateUsername = async (req, res) => {
   }
 };
 
-module.exports = { signupUser, loginUser, refreshUserToken, updateUsername };
+// Update Sidebar Items Order
+const updateSidebarItemsOrder = async (req, res) => {
+  const { newOrder } = req.body;
+
+  try {
+    if (!newOrder) {
+      res.status(500).json({ error: "Order is required" });
+    }
+
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
+    }
+
+    user.preferences.sidebarItemsOrder = newOrder;
+    await user.save();
+
+    res.status(200).json({ preferences: user.preferences });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+module.exports = { signupUser, loginUser, refreshUserToken, updateUsername, updateSidebarItemsOrder };

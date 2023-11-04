@@ -4,6 +4,7 @@ const {
   loginUser,
   refreshUserToken,
   updateUsername,
+  updateSidebarItemsOrder
 } = require("../controllers/userController");
 const requireAuth = require("../middleware/requireAuth");
 
@@ -18,7 +19,10 @@ router.post("/signup", signupUser);
 //refresh token route
 router.post("/refresh_token", refreshUserToken);
 
-//refresh token route
+//Update username
 router.post("/update_username", requireAuth, updateUsername);
+
+//Update sidebar items order
+router.post("/sidebar_items_order", requireAuth, updateSidebarItemsOrder);
 
 module.exports = router;
