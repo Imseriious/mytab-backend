@@ -87,7 +87,7 @@ const updateFolder = async (req, res) => {
     }
 
     if (name) folder.name = name;
-    if (categoryId) folder.categoryId = categoryId;
+    if (categoryId || categoryId === null) folder.categoryId = categoryId;
 
     await folder.save();
 
