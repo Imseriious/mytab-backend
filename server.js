@@ -23,7 +23,7 @@ const widgetCryptoRoutes = require("./routes/widgets/widgetCryptoRoutes");
 // Express app
 const app = express();
 
-const allowedOriginas = [
+const allowedOrigins = [
   "http://localhost:3000",
   "chrome-extension://pkbdodflcdblhhhhfpnibfaibbgnhgpb",
   "https://mytab-frontend.onrender.com",
@@ -32,7 +32,7 @@ const allowedOriginas = [
 // OR, allow only specific origins
 app.use(
   cors({
-    origin: allowedOriginas, // replace this with your React app's URL
+    origin: allowedOrigins, // todo replace this with your React app's URL
     credentials: true,
   })
 );
