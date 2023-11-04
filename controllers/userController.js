@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 
 // Function to create Access Token
 const createAccessToken = (_id) => {
-  return jwt.sign({ _id }, process.env.SECRET, { expiresIn: "15m" }); //TODO, maybe longer
+  return jwt.sign({ _id }, process.env.SECRET, { expiresIn: "30m" }); //TODO, maybe longer
 };
 
 // Function to create Refresh Token
@@ -36,15 +36,16 @@ const loginUser = async (req, res) => {
     const accessToken = createAccessToken(user._id);
     const refreshToken = createRefreshToken(user._id);
     // Send refresh token as a cookie
+    // Send refresh token as a cookie
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: true,
-      sameSite: "None",
+      secure: true, // set to false if you're not using https
+      sameSite: "None", // set to 'Lax' or 'Strict' if possible for better security
+      maxAge: 60 * 60 * 24 * 60 * 1000, // 60 days
     });
 
     res.status(200).json({
       email,
-      token: accessToken,
       preferences: user.preferences,
       username: user.username,
     });
@@ -52,6 +53,13 @@ const loginUser = async (req, res) => {
     console.log(error);
     res.status(400).json({ error: error.message });
   }
+};
+
+// Logout endpoint
+const logout = async (req, res) => {
+  res.cookie("accessToken", "", { maxAge: 0 });
+  res.cookie("refreshToken", "", { maxAge: 0 });
+  res.status(200).json({ message: "Logged out successfully" });
 };
 
 // SignUp User
@@ -64,16 +72,16 @@ const signupUser = async (req, res) => {
     const refreshToken = createRefreshToken(user._id);
     const userPreferences = user.preferences;
 
-    // Send refresh token as a cookie
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: true,
-      sameSite: "None",
+      secure: true, // set to false if you're not using https
+      sameSite: "None", // set to 'Lax' or 'Strict' if possible for better security
+      maxAge: 60 * 60 * 24 * 60 * 1000, // 60 days
     });
 
     res
       .status(200)
-      .json({ email, token: accessToken, preferences: userPreferences });
+      .json({ email, preferences: userPreferences });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
@@ -85,17 +93,17 @@ const updateUsername = async (req, res) => {
 
   try {
     if (!username) {
-      res.status(500).json({ error: "Username is required" });
+      res.status(400).json({ error: "Username is required" });
     }
 
     if (username.length < 3) {
-      res.status(500).json({ error: "Username is too short" });
+      res.status(400).json({ error: "Username is too short" });
     }
 
     const userNameExists = await User.findOne({ username });
 
     if (userNameExists) {
-      res.status(500).json({ error: "Username is already in use" });
+      res.status(400).json({ error: "Username is already in use" });
     }
 
     const user = await User.findById(req.user._id);
@@ -164,6 +172,7 @@ const updateDockItemsOrder = async (req, res) => {
 module.exports = {
   signupUser,
   loginUser,
+  logout,
   refreshUserToken,
   updateUsername,
   updateSidebarItemsOrder,

@@ -2,6 +2,7 @@ const express = require("express");
 const {
   signupUser,
   loginUser,
+  logout,
   refreshUserToken,
   updateUsername,
   updateSidebarItemsOrder,
@@ -13,6 +14,8 @@ const router = express.Router();
 
 //login router
 router.post("/login", loginUser);
+
+router.post("/logout", logout);
 
 //signup route
 router.post("/signup", signupUser);
