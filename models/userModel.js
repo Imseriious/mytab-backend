@@ -22,7 +22,7 @@ const userSchema = new Schema({
   preferences: {
     wallpaperCollection: {
       type: String,
-      default: "all",
+      default: "best",
     },
     cryptoWidget: {
       type: [String],
