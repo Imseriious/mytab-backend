@@ -27,7 +27,7 @@ const favoriteSchema = new mongoose.Schema(
       required: true,
     },
     iconUrl: {
-      type: String,
+      type: String || null,
       trim: true,
     },
   },

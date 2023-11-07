@@ -29,19 +29,16 @@ const getFaviconFromUrl = async (url) => {
   }
 
   const iconUrl = `https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://${urlDomain}&size=64`;
-  
-  // Perform the HTTP request to check if the favicon is valid
+
   try {
-    const response = await axios.get(iconUrl, { responseType: 'blob' });
+    const response = await axios.get(iconUrl, { responseType: "blob" });
     if (response.status === 200) {
       return iconUrl;
     }
   } catch (error) {
-    // If the request fails, log the error and return null
     console.error("Failed to fetch favicon:", error.message);
+    return null;
   }
-
-  return null;
 };
 
 module.exports = getFaviconFromUrl;
