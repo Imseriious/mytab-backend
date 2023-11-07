@@ -41,6 +41,7 @@ const addBookmark = async (req, res) => {
       userId: req.user._id,
     });
 
+
     await bookmark.save();
     res.status(201).json(bookmark);
   } catch (error) {

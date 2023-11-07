@@ -62,7 +62,7 @@ const getWebsiteInfo = async (url) => {
   }
 
   return axios
-    .get(url)
+    .get(url, { timeout: 2000 })
     .then(function (response) {
       const dom = new JSDOM(response.data);
 
