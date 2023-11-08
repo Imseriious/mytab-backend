@@ -22,7 +22,7 @@ const userSchema = new Schema({
   preferences: {
     wallpaperCollection: {
       type: String,
-      default: "all",
+      default: "best",
     },
     cryptoWidget: {
       type: [String],
@@ -34,6 +34,12 @@ const userSchema = new Schema({
         default: "New york",
       },
     },
+    sidebarItemsOrder: {
+      type: [String]
+    },
+    dockItemsOrder: {
+      type: [String]
+    }
   },
 });
 

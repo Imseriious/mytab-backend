@@ -16,7 +16,7 @@ const bookmarkSchema = new mongoose.Schema(
       required: true,
     },
     iconUrl: {
-      type: String,
+      type: String || null,
     },
     description: {
       type: String,
