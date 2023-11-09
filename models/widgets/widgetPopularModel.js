@@ -4,7 +4,24 @@ const tiktokSchema = new mongoose.Schema({
   description: String,
   title: String,
   thumbnail: String,
-  url: String
+  url: String,
+});
+
+const xTrends = new mongoose.Schema({
+  name: String,
+  url: String,
+});
+
+const xTweets = new mongoose.Schema({
+  trend: String,
+  url: String,
+  text: String,
+  media: { type: String, required: false },
+});
+
+const xContent = new mongoose.Schema({
+  trends: [xTrends],
+  tweets: [xTweets],
 });
 
 const youtubeContent = new mongoose.Schema({
@@ -53,15 +70,16 @@ const widgetPopularSchema = new mongoose.Schema({
   apps: {
     youtube: {
       type: [youtubeContent],
-      required: true,
     },
     reddit: {
       type: [redditContent],
-      required: true,
     },
     tiktok: {
-      type: [tiktokSchema]
-    }
+      type: [tiktokSchema],
+    },
+    xContent: {
+      type: xContent,
+    },
   },
 });
 

@@ -35,11 +35,21 @@ const userSchema = new Schema({
       },
     },
     sidebarItemsOrder: {
-      type: [String]
+      type: [String],
+      default: [],
+    },
+    sidebarCategoryFoldersOrder: {
+      type: [
+        {
+          categoryId: String,
+          order: [String],
+        },
+      ],
+      default: [],
     },
     dockItemsOrder: {
-      type: [String]
-    }
+      type: [String],
+    },
   },
 });
 
@@ -69,6 +79,7 @@ userSchema.statics.signup = async function (email, password) {
 
   const user = await this.create({
     email,
+    username: email,
     password: hash,
   });
 
