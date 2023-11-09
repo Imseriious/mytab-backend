@@ -1,5 +1,6 @@
 const Category = require("../models/categoryModel");
 const Folder = require("../models/folderModel");
+const User = require("../models/userModel");
 
 const createCategory = async (req, res) => {
   try {
@@ -43,18 +44,29 @@ const deleteCategory = async (req, res) => {
     if (String(category.userId) !== String(req.user._id)) {
       return res
         .status(403)
-        .json({ error: "Not authorized to delete this category" });
+        .json({ error: "User not authorized to delete this category" });
     }
 
-    // Find and delete all folders associated with this category
+    const user = await User.findById(req.user._id);
+    let newUserPreferences;
+    if (user) {
+      newUserPreferences = user.preferences.sidebarCategoryFoldersOrder.filter(
+        (category) => category.categoryId !== categoryId
+      );
+      user.preferences.sidebarCategoryFoldersOrder = newUserPreferences;
+      await user.save();
+    } else {
+      res.status(401).json({
+        error: "User not found",
+      });
+    }
+
     await Folder.deleteMany({ categoryId: categoryId });
 
     await category.deleteOne();
-    res
-      .status(200)
-      .json({
-        message: "Category and associated folders deleted successfully",
-      });
+    res.status(200).json({
+      message: "Category and associated folders deleted successfully",
+    });
   } catch (error) {
     console.error(error);
     res

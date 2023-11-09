@@ -143,6 +143,48 @@ const updateSidebarItemsOrder = async (req, res) => {
   }
 };
 
+// Update Sidebar Items Order
+const updateSidebarCategoryFoldersOrder = async (req, res) => {
+  const { categoryId, newOrder } = req.body;
+
+  try {
+    if (!categoryId) {
+      res.status(500).json({ error: "Category ID is required" });
+    }
+
+    if (!newOrder) {
+      res.status(500).json({ error: "Order is required" });
+    }
+
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
+    }
+
+    const userCategoryOrder =
+      user.preferences.sidebarCategoryFoldersOrder.filter(
+        (category) => category.categoryId === categoryId
+      )[0];
+
+    if (userCategoryOrder) {
+      userCategoryOrder.order = newOrder;
+    } else {
+      const newCategoryOrderObject = {
+        categoryId: categoryId,
+        order: newOrder,
+      };
+      user.preferences.sidebarCategoryFoldersOrder.push(newCategoryOrderObject);
+    }
+
+    await user.save();
+
+    res.status(200).json({ preferences: user.preferences });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
 // Update Dock Items Order
 const updateDockItemsOrder = async (req, res) => {
   const { newOrder } = req.body;
@@ -174,5 +216,6 @@ module.exports = {
   refreshUserToken,
   updateUsername,
   updateSidebarItemsOrder,
+  updateSidebarCategoryFoldersOrder,
   updateDockItemsOrder,
 };
