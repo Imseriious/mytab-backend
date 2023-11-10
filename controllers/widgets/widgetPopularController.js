@@ -1,6 +1,7 @@
 const WidgetPopular = require("../../models/widgets/widgetPopularModel");
 const axios = require("axios");
 const getTweetsFromTrend = require("../../utils/getTweetsFromTrend");
+require("dotenv").config();
 
 const getTikTokPopular = async () => {
   const options = {
@@ -15,7 +16,7 @@ const getTikTokPopular = async () => {
       sort_type: "1", // bylikes
     },
     headers: {
-      "X-RapidAPI-Key": "a4f0813135msh4995daeba316f20p16560cjsne1ea93c10bdd",
+      "X-RapidAPI-Key": process.env.RAPID_API_KEY,
       "X-RapidAPI-Host": "scraptik.p.rapidapi.com",
     },
   };
@@ -46,7 +47,7 @@ const getTwitterPopular = async () => {
     url: "https://twitter154.p.rapidapi.com/trends/",
     params: { woeid: "23424977" }, // USA
     headers: {
-      "X-RapidAPI-Key": "a4f0813135msh4995daeba316f20p16560cjsne1ea93c10bdd", // hotmail
+      "X-RapidAPI-Key": process.env.RAPID_API_KEY,
       "X-RapidAPI-Host": "twitter154.p.rapidapi.com",
     },
   };
@@ -95,7 +96,7 @@ const getYoutubePopular = async () => {
     url: "https://youtube-trending.p.rapidapi.com/trending",
     params: {},
     headers: {
-      "X-RapidAPI-Key": "a4f0813135msh4995daeba316f20p16560cjsne1ea93c10bdd", //TODO env ?
+      "X-RapidAPI-Key": process.env.RAPID_API_KEY,
       "X-RapidAPI-Host": "youtube-trending.p.rapidapi.com",
     },
   };
@@ -124,7 +125,7 @@ const getPopularReddit = async () => {
     url: "https://reddit34.p.rapidapi.com/getTopPopularPosts",
     params: { time: "day" },
     headers: {
-      "X-RapidAPI-Key": "a4f0813135msh4995daeba316f20p16560cjsne1ea93c10bdd",
+      "X-RapidAPI-Key": process.env.RAPID_API_KEY,
       "X-RapidAPI-Host": "reddit34.p.rapidapi.com",
     },
   };

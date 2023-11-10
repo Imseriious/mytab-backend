@@ -1,10 +1,11 @@
 const User = require("../../models/userModel");
 const axios = require("axios");
+require("dotenv").config();
 
 const getWeather = (req, res) => {
   const city = req.params.city;
   const units = "metric"; // TODO user config
-  const apiKey = "34abe7ce36d9d34ff5f2248ccc2971b8";
+  const apiKey = process.env.OPEN_WEATHER_API_KEY;
   const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=${units}&appid=${apiKey}`;
 
   axios
@@ -26,7 +27,7 @@ const getWeather = (req, res) => {
 
 const findCity = (req, res) => {
   const { query } = req.body;
-  const apiKey = "34abe7ce36d9d34ff5f2248ccc2971b8";
+  const apiKey = process.env.OPEN_WEATHER_API_KEY;
   const url = `http://api.openweathermap.org/geo/1.0/direct?q=${query}&limit=5&appid=${apiKey}  `;
   axios
     .get(url)

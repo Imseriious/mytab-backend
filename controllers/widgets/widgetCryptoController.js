@@ -1,8 +1,8 @@
 const axios = require("axios");
-const apiKey = "3b226db2-4211-4cf1-8aab-ca849a7d27d0";
 const User = require("../../models/userModel");
 const topCryptoSymbols = require("../../utils/coinMarketCapUtil");
 const CoinsCollection = require("../../models/widgets/widgetCryptoModel");
+require("dotenv").config();
 
 const getCryptoLogo = async (ids) => {
   try {
@@ -10,7 +10,7 @@ const getCryptoLogo = async (ids) => {
       "https://pro-api.coinmarketcap.com/v2/cryptocurrency/info",
       {
         headers: {
-          "X-CMC_PRO_API_KEY": apiKey,
+          "X-CMC_PRO_API_KEY": process.env.COIN_MARKET_CAP_KEY,
         },
         params: {
           symbol: ids, // Pass the comma-separated string of IDs
@@ -57,7 +57,7 @@ const getCryptoInfo = async (req, res) => {
 
       const response = await axios.get(url, {
         headers: {
-          "X-CMC_PRO_API_KEY": apiKey,
+          "X-CMC_PRO_API_KEY": process.env.COIN_MARKET_CAP_KEY,
         },
         params: params,
       });
