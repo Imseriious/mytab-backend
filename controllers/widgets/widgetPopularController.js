@@ -1,5 +1,7 @@
 const WidgetPopular = require("../../models/widgets/widgetPopularModel");
 const axios = require("axios");
+const getTweetsFromTrend = require("../../utils/getTweetsFromTrend");
+require("dotenv").config();
 
 const getTikTokPopular = async () => {
   const options = {
@@ -14,7 +16,7 @@ const getTikTokPopular = async () => {
       sort_type: "1", // bylikes
     },
     headers: {
-      "X-RapidAPI-Key": "a4f0813135msh4995daeba316f20p16560cjsne1ea93c10bdd",
+      "X-RapidAPI-Key": process.env.RAPID_API_KEY,
       "X-RapidAPI-Host": "scraptik.p.rapidapi.com",
     },
   };
@@ -39,13 +41,62 @@ const getTikTokPopular = async () => {
   }
 };
 
+const getTwitterPopular = async () => {
+  const trendsOptions = {
+    method: "GET",
+    url: "https://twitter154.p.rapidapi.com/trends/",
+    params: { woeid: "23424977" }, // USA
+    headers: {
+      "X-RapidAPI-Key": process.env.RAPID_API_KEY,
+      "X-RapidAPI-Host": "twitter154.p.rapidapi.com",
+    },
+  };
+
+  try {
+    const trendsResponse = await axios.request(trendsOptions);
+    const trends = trendsResponse.data[0].trends;
+
+    // Filter the trends to the top 2.
+    const formattedTrends = trends
+      .filter((option, i) => i < 4)
+      .map((trend) => ({
+        name: trend.name,
+        url: trend.url,
+      }));
+
+    // Create an array to hold the promises for fetching tweets.
+    const tweetsPromises = [];
+
+    // Loop through the formattedTrends and add a delay before each request.
+    for (const trend of formattedTrends) {
+      // Introduce a one-second delay before making each request.
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      const tweetsPromise = getTweetsFromTrend(trend.name);
+      tweetsPromises.push(tweetsPromise);
+    }
+
+    // Wait for all of the tweets promises to resolve and flatten the array.
+    const tweetsFromTrends = [].concat(...(await Promise.all(tweetsPromises)));
+
+    // Return the array of tweets from all of the trends.
+    const xContent = {
+      trends: formattedTrends,
+      tweets: tweetsFromTrends,
+    };
+    return xContent;
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+};
+
 const getYoutubePopular = async () => {
   const options = {
     method: "GET",
     url: "https://youtube-trending.p.rapidapi.com/trending",
     params: {},
     headers: {
-      "X-RapidAPI-Key": "a4f0813135msh4995daeba316f20p16560cjsne1ea93c10bdd", //TODO env ?
+      "X-RapidAPI-Key": process.env.RAPID_API_KEY,
       "X-RapidAPI-Host": "youtube-trending.p.rapidapi.com",
     },
   };
@@ -74,7 +125,7 @@ const getPopularReddit = async () => {
     url: "https://reddit34.p.rapidapi.com/getTopPopularPosts",
     params: { time: "day" },
     headers: {
-      "X-RapidAPI-Key": "a4f0813135msh4995daeba316f20p16560cjsne1ea93c10bdd",
+      "X-RapidAPI-Key": process.env.RAPID_API_KEY,
       "X-RapidAPI-Host": "reddit34.p.rapidapi.com",
     },
   };
@@ -118,7 +169,8 @@ const getPopularToday = async (req, res) => {
     if (!widgetPopular || widgetPopular.updatedDate !== currentDate) {
       const youtubePopular = await getYoutubePopular();
       const redditPopular = await getPopularReddit();
-      const tiktokPopular = await getTikTokPopular(); // Getting TikTok popular items
+      const tiktokPopular = await getTikTokPopular();
+      const twitterPopular = await getTwitterPopular();
 
       if (!widgetPopular) {
         widgetPopular = new WidgetPopular(); // If no record is found, create a new one
@@ -127,7 +179,8 @@ const getPopularToday = async (req, res) => {
       widgetPopular.updatedDate = currentDate;
       widgetPopular.apps.youtube = youtubePopular;
       widgetPopular.apps.reddit = redditPopular;
-      widgetPopular.apps.tiktok = tiktokPopular; // Including TikTok popular items
+      widgetPopular.apps.tiktok = tiktokPopular;
+      widgetPopular.apps.xContent = twitterPopular;
 
       await widgetPopular.save(); // Save the updated record in the database
     }

@@ -3,6 +3,8 @@ const mongoose = require("mongoose");
 
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
 
 require("dotenv").config();
 
@@ -23,6 +25,18 @@ const widgetCryptoRoutes = require("./routes/widgets/widgetCryptoRoutes");
 // Express app
 const app = express();
 
+// Use Helmet
+app.use(helmet());
+
+// Rate Limiting
+const limiter = rateLimit({
+  windowMs: 5 * 60 * 1000, // 5 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+});
+
+// Apply to all requests
+app.use(limiter);
+
 const allowedOrigins = [
   "http://localhost:3000",
   "chrome-extension://pkbdodflcdblhhhhfpnibfaibbgnhgpb",
@@ -32,7 +46,7 @@ const allowedOrigins = [
 // OR, allow only specific origins
 app.use(
   cors({
-    origin: allowedOrigins, // todo replace this with your React app's URL
+    origin: allowedOrigins,
     credentials: true,
   })
 );

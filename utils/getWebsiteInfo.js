@@ -77,7 +77,7 @@ const getWebsiteInfo = async (url) => {
     .catch(function (error) {
       return {
         title: "Error",
-        description: "No website info",
+        description: "None",
         error: error,
       };
     });
