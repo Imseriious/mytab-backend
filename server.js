@@ -42,6 +42,7 @@ const allowedOrigins = [
   "http://localhost:3000",
   "chrome-extension://pkbdodflcdblhhhhfpnibfaibbgnhgpb",
   "https://sleektab.app",
+  "https://www.sleektab.app"
 ];
 
 // OR, allow only specific origins
