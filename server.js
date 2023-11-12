@@ -15,6 +15,7 @@ const folderRoutes = require("./routes/folderRoutes");
 const categoryRoutes = require("./routes/categoryRoutes");
 const favoriteRoutes = require("./routes/favoriteRoutes");
 const wallpapersRoutes = require("./routes/wallpapersRoutes");
+const appRequestRoutes = require("./routes/appRequestsRoutes");
 
 //Import Widget Routes
 const widgetQuotesRoutes = require("./routes/widgets/widgetQuotesRoutes");
@@ -73,6 +74,7 @@ app.use("/api/folders", folderRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/favorites", favoriteRoutes);
 app.use("/api/wallpapers", wallpapersRoutes);
+app.use("/api/apprequests", appRequestRoutes);
 
 // Use Widget Routes
 app.use("/api/widgetquotes", widgetQuotesRoutes);
