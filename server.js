@@ -41,7 +41,7 @@ app.use(limiter);
 const allowedOrigins = [
   "http://localhost:3000",
   "chrome-extension://pkbdodflcdblhhhhfpnibfaibbgnhgpb",
-  "https://mytab-frontend.onrender.com",
+  "https://sleektab.app",
 ];
 
 // OR, allow only specific origins
