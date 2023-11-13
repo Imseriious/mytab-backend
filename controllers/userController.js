@@ -37,13 +37,14 @@ const loginUser = async (req, res) => {
     const refreshToken = createRefreshToken(user._id);
     // Send refresh token as a cookie
     res.cookie("refreshToken", refreshToken, {
-      httpOnly: true, // The cookie is only accessible by the server
-      secure: true, // Ensure the cookie is sent over HTTPS
-      sameSite: "none", // The cookie is sent with every request when None, use 'Lax' or 'Strict' for CSRF protection
-      maxAge: 24 * 60 * 60 * 1000, // Set the cookie to expire after one day
+      httpOnly: true,
+      secure: true,
+      sameSite: "None",
+      maxAge: 24 * 60 * 60 * 1000,
     });
 
     res.status(200).json({
+      accessToken,
       email,
       preferences: user.preferences,
       username: user.username,
@@ -74,11 +75,15 @@ const signupUser = async (req, res) => {
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: true,
-      sameSite: "none",
-      maxAge: 24 * 60 * 60 * 1000, // 1 day
+      sameSite: "None",
+      maxAge: 24 * 60 * 60 * 1000,
     });
 
-    res.status(200).json({ email, preferences: userPreferences });
+    res.status(200).json({
+      accessToken,
+      email,
+      preferences: userPreferences,
+    });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
