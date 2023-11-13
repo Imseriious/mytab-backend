@@ -23,18 +23,20 @@ const getTikTokPopular = async () => {
 
   try {
     const response = await axios.request(options);
-    const formattedOptions = response.data.data.map(
-      (option) =>
-        option.aweme_info?.desc && //TODO Check if this really works
-        option.aweme_info?.search_desc &&
-        option.preload_img?.urls?.[1] &&
-        option.aweme_info?.share_url && {
-          description: option.aweme_info?.desc,
-          title: option.aweme_info?.search_desc,
-          thumbnail: option.preload_img?.urls?.[1],
-          url: option.aweme_info?.share_url,
-        }
-    );
+    const formattedOptions = response.data.data
+      .map(
+        (option) =>
+          option.aweme_info?.desc &&
+          option.aweme_info?.search_desc &&
+          option.preload_img?.urls?.[1] &&
+          option.aweme_info?.share_url && {
+            description: option.aweme_info?.desc,
+            title: option.aweme_info?.search_desc,
+            thumbnail: option.preload_img?.urls?.[1],
+            url: option.aweme_info?.share_url,
+          }
+      )
+      .filter((option) => option !== undefined);
     return formattedOptions;
   } catch (error) {
     console.error(error);
