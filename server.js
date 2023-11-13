@@ -29,6 +29,8 @@ const app = express();
 // Use Helmet
 app.use(helmet());
 
+app.set('trust proxy', 1);
+
 // Rate Limiting
 const limiter = rateLimit({
   windowMs: 5 * 60 * 1000, // 5 minutes
