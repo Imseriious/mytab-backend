@@ -66,21 +66,16 @@ const getTwitterPopular = async () => {
         url: trend.url,
       }));
 
-    // Create an array to hold the promises for fetching tweets.
     const tweetsPromises = [];
 
-    // Loop through the formattedTrends and add a delay before each request.
     for (const trend of formattedTrends) {
-      // Introduce a one-second delay before making each request.
       await new Promise((resolve) => setTimeout(resolve, 2000));
       const tweetsPromise = getTweetsFromTrend(trend.name);
       tweetsPromises.push(tweetsPromise);
     }
 
-    // Wait for all of the tweets promises to resolve and flatten the array.
     const tweetsFromTrends = [].concat(...(await Promise.all(tweetsPromises)));
 
-    // Return the array of tweets from all of the trends.
     const xContent = {
       trends: formattedTrends,
       tweets: tweetsFromTrends,
@@ -105,7 +100,6 @@ const getYoutubePopular = async () => {
 
   try {
     const response = await axios.request(options);
-    // Filtering the first five elements and then formatting them
     const formattedOptions = response.data
       .filter((option, i) => i < 10)
       .map((option) => ({
@@ -166,21 +160,20 @@ const getPopularToday = async (req, res) => {
     const currentDate = new Date().toISOString().split("T")[0]; // Get the current date in YYYY-MM-DD format
 
     let widgetPopular = await WidgetPopular.findOne(); // Fetch the record from the database
-
-    // If no record or outdated record is found, fetch new data, update the record and save it
+    const oldReddit = widgetPopular.apps.reddit;
     if (!widgetPopular || widgetPopular.updatedDate !== currentDate) {
       const youtubePopular = await getYoutubePopular();
-      const redditPopular = await getPopularReddit();
+      //const redditPopular = await getPopularReddit(); TODO Add redit back after 22/11
       const tiktokPopular = await getTikTokPopular();
       const twitterPopular = await getTwitterPopular();
 
       if (!widgetPopular) {
-        widgetPopular = new WidgetPopular(); // If no record is found, create a new one
+        widgetPopular = new WidgetPopular();
       }
 
       widgetPopular.updatedDate = currentDate;
       widgetPopular.apps.youtube = youtubePopular;
-      widgetPopular.apps.reddit = redditPopular;
+      widgetPopular.apps.reddit = oldReddit; //Repalce after adding
       widgetPopular.apps.tiktok = tiktokPopular;
       widgetPopular.apps.xContent = twitterPopular;
 

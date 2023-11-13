@@ -26,25 +26,11 @@ const widgetCryptoRoutes = require("./routes/widgets/widgetCryptoRoutes");
 // Express app
 const app = express();
 
-// Use Helmet
-app.use(helmet());
-
-app.set('trust proxy', 1);
-
-// Rate Limiting
-const limiter = rateLimit({
-  windowMs: 5 * 60 * 1000, // 5 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
-});
-
-// Apply to all requests
-app.use(limiter);
-
 const allowedOrigins = [
   "http://localhost:3000",
   "chrome-extension://pkbdodflcdblhhhhfpnibfaibbgnhgpb",
   "https://sleektab.app",
-  "https://www.sleektab.app"
+  "https://www.sleektab.app",
 ];
 
 // OR, allow only specific origins
@@ -54,6 +40,20 @@ app.use(
     credentials: true,
   })
 );
+
+// Use Helmet
+app.use(helmet());
+
+app.set("trust proxy", 1);
+
+// Rate Limiting
+const limiter = rateLimit({
+  windowMs: 5 * 60 * 1000, // 5 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+});
+
+// Apply to all requests
+app.use(limiter);
 
 // Cookie parser
 app.use(cookieParser());
