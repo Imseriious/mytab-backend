@@ -71,19 +71,19 @@ mongoose
   .catch((err) => console.error("Could not connect to MongoDB...", err));
 
 // Use routes
-app.use("/api/user", userRoutes);
-app.use("/api/bookmarks", bookmarkRoutes);
-app.use("/api/folders", folderRoutes);
-app.use("/api/categories", categoryRoutes);
-app.use("/api/favorites", favoriteRoutes);
-app.use("/api/wallpapers", wallpapersRoutes);
-app.use("/api/apprequests", appRequestRoutes);
+app.use("/user", userRoutes);
+app.use("/bookmarks", bookmarkRoutes);
+app.use("/folders", folderRoutes);
+app.use("/categories", categoryRoutes);
+app.use("/favorites", favoriteRoutes);
+app.use("/wallpapers", wallpapersRoutes);
+app.use("/apprequests", appRequestRoutes);
 
 // Use Widget Routes
-app.use("/api/widgetquotes", widgetQuotesRoutes);
-app.use("/api/widgetPopular", widgetPopularRoutes);
-app.use("/api/widgetWeather", widgetWeatherRoutes);
-app.use("/api/widgetCrypto", widgetCryptoRoutes);
+app.use("/widgetquotes", widgetQuotesRoutes);
+app.use("/widgetPopular", widgetPopularRoutes);
+app.use("/widgetWeather", widgetWeatherRoutes);
+app.use("/widgetCrypto", widgetCryptoRoutes);
 
 // Start the server
 const port = process.env.PORT || 3000;
