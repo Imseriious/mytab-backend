@@ -3,25 +3,24 @@ const jwt = require("jsonwebtoken");
 
 // Function to create Access Token
 const createAccessToken = (_id) => {
-  return jwt.sign({ _id }, process.env.SECRET, { expiresIn: "1m" }); //TODO, maybe longer
+  return jwt.sign({ _id }, process.env.SECRET, { expiresIn: "50m" });
 };
 
 // Function to create Refresh Token
 const createRefreshToken = (_id) => {
-  return jwt.sign({ _id }, process.env.REFRESH_SECRET, { expiresIn: "60d" });
+  return jwt.sign({ _id }, process.env.REFRESH_SECRET, { expiresIn: "365d" });
 };
 
 // Refresh token
 const refreshUserToken = async (req, res) => {
   const refreshToken = req.cookies.refreshToken;
-  console.log("copokies: ", req.cookies, refreshToken)
   if (!refreshToken)
     return res
       .status(401)
       .send("Access Denied - Refresh token cookie not found");
 
   jwt.verify(refreshToken, process.env.REFRESH_SECRET, (err, user) => {
-    if (err) return res.status(403).send("Invalid Refresh Token"); console.log("Inavlid")
+    if (err) return res.status(403).send("Invalid Refresh Token");
 
     const accessToken = createAccessToken(user._id);
     res.json({ accessToken });
@@ -41,7 +40,7 @@ const loginUser = async (req, res) => {
       httpOnly: true,
       secure: true,
       sameSite: "None",
-      maxAge: 24 * 60 * 60 * 1000,
+      maxAge: 365 * 24 * 60 * 60 * 1000,
     });
 
     res.status(200).json({
@@ -76,7 +75,7 @@ const signupUser = async (req, res) => {
       httpOnly: true,
       secure: true,
       sameSite: "None",
-      maxAge: 24 * 60 * 60 * 1000,
+      maxAge: 365 * 24 * 60 * 60 * 1000,
     });
 
     res.status(200).json({
