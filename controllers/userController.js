@@ -58,7 +58,6 @@ const loginUser = async (req, res) => {
 
 // Logout endpoint
 const logout = async (req, res) => {
-  res.cookie("accessToken", "", { maxAge: 0 });
   res.cookie("refreshToken", "", { maxAge: 0 });
   res.status(200).json({ message: "Logged out successfully" });
 };
