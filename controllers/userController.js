@@ -14,13 +14,14 @@ const createRefreshToken = (_id) => {
 // Refresh token
 const refreshUserToken = async (req, res) => {
   const refreshToken = req.cookies.refreshToken;
+  console.log("copokies: ", req.cookies, refreshToken)
   if (!refreshToken)
     return res
       .status(401)
       .send("Access Denied - Refresh token cookie not found");
 
   jwt.verify(refreshToken, process.env.REFRESH_SECRET, (err, user) => {
-    if (err) return res.status(403).send("Invalid Refresh Token");
+    if (err) return res.status(403).send("Invalid Refresh Token"); console.log("Inavlid")
 
     const accessToken = createAccessToken(user._id);
     res.json({ accessToken });
