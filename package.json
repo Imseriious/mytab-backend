@@ -24,6 +24,7 @@
     "mongodb": "^6.1.0",
     "mongoose": "^7.6.1",
     "node-fetch": "^3.3.2",
+    "openai": "^4.17.5",
     "validator": "^13.11.0"
   }
 }

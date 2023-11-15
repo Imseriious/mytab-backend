@@ -16,6 +16,7 @@ const categoryRoutes = require("./routes/categoryRoutes");
 const favoriteRoutes = require("./routes/favoriteRoutes");
 const wallpapersRoutes = require("./routes/wallpapersRoutes");
 const appRequestRoutes = require("./routes/appRequestsRoutes");
+const assistantRoutes = require("./routes/assistantRoutes");
 
 //Import Widget Routes
 const widgetQuotesRoutes = require("./routes/widgets/widgetQuotesRoutes");
@@ -78,6 +79,7 @@ app.use("/categories", categoryRoutes);
 app.use("/favorites", favoriteRoutes);
 app.use("/wallpapers", wallpapersRoutes);
 app.use("/apprequests", appRequestRoutes);
+app.use("/assistant", assistantRoutes);
 
 // Use Widget Routes
 app.use("/widgetquotes", widgetQuotesRoutes);
