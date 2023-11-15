@@ -51,6 +51,27 @@ const userSchema = new Schema({
       type: [String],
     },
   },
+  assistant: {
+    type: {
+      threadId: {
+        type: String,
+        required: false,
+      },
+      messagesCount: [
+        {
+          count: {
+            type: Number,
+            required: true,
+          },
+          date: {
+            type: Date,
+            required: true,
+          },
+        },
+      ],
+    },
+    required: false,
+  },
 });
 
 // Static signup method
