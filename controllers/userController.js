@@ -6,6 +6,11 @@ const createAccessToken = (_id) => {
   return jwt.sign({ _id }, process.env.SECRET, { expiresIn: "50m" });
 };
 
+// Function to create Access Token
+const createExtensionToken = (_id) => {
+  return jwt.sign({ _id }, process.env.SECRET, { expiresIn: "30d" });
+};
+
 // Function to create Refresh Token
 const createRefreshToken = (_id) => {
   return jwt.sign({ _id }, process.env.REFRESH_SECRET, { expiresIn: "365d" });
@@ -23,7 +28,8 @@ const refreshUserToken = async (req, res) => {
     if (err) return res.status(403).send("Invalid Refresh Token");
 
     const accessToken = createAccessToken(user._id);
-    res.json({ accessToken });
+    const extensionToken = createExtensionToken(user._id);
+    res.json({ accessToken, extensionToken });
   });
 };
 
@@ -35,6 +41,7 @@ const loginUser = async (req, res) => {
     const user = await User.login(email, password);
     const accessToken = createAccessToken(user._id);
     const refreshToken = createRefreshToken(user._id);
+    const extensionToken = createExtensionToken(user._id);
     // Send refresh token as a cookie
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
@@ -45,6 +52,7 @@ const loginUser = async (req, res) => {
 
     res.status(200).json({
       accessToken,
+      extensionToken,
       email,
       preferences: user.preferences,
       username: user.username,
@@ -68,6 +76,7 @@ const signupUser = async (req, res) => {
   try {
     const user = await User.signup(email, password);
     const accessToken = createAccessToken(user._id);
+    const extensionToken = createExtensionToken(user._id);
     const refreshToken = createRefreshToken(user._id);
     const userPreferences = user.preferences;
 
@@ -80,6 +89,7 @@ const signupUser = async (req, res) => {
 
     res.status(200).json({
       accessToken,
+      extensionToken,
       email,
       preferences: userPreferences,
     });
