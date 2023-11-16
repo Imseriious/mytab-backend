@@ -41,7 +41,6 @@ const addBookmark = async (req, res) => {
       userId: req.user._id,
     });
 
-
     await bookmark.save();
     res.status(201).json(bookmark);
   } catch (error) {
@@ -106,11 +105,13 @@ const updateBookmark = async (req, res) => {
     }
 
     if (name) bookmark.name = name;
-    if (url) bookmark.url = url;
-    if (folderId) {
-      bookmark.folderId = folderId === "none" ? null : folderId;
+    if (url) {
+      bookmark.url = url;
+      bookmark.iconUrl = await getBookmarkIconUrl(url);
     }
-    bookmark.iconUrl = await getBookmarkIconUrl(url);
+    if (folderId) {
+      bookmark.folderId = folderId === ("none" || "None") ? null : folderId;
+    }
 
     await bookmark.save();
 
