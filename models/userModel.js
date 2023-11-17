@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const validator = require("validator");
+const { inviteCodes } = require("../utils/inviteCodes");
 
 const Schema = mongoose.Schema;
 
@@ -75,9 +76,9 @@ const userSchema = new Schema({
 });
 
 // Static signup method
-userSchema.statics.signup = async function (email, password) {
+userSchema.statics.signup = async function (email, password, inviteCode) {
   // Validation
-  if (!email || !password) {
+  if (!email || !password || !inviteCode) {
     throw Error("All fields are required");
   }
 
@@ -85,14 +86,26 @@ userSchema.statics.signup = async function (email, password) {
     throw Error("Email is not valid");
   }
 
+  const invitation = inviteCodes.filter((invite) => email === invite.email.toLowerCase())[0];
+
+  if (!invitation) {
+    throw Error("User not invited yet, apply for early access if you didn't");
+  }
+
+  if (inviteCode !== invitation.code.toLowerCase()) {
+    throw Error(
+      "The invitation code is incorrect. Contact support for any questions."
+    );
+  }
+
   if (!validator.isStrongPassword(password)) {
-    throw Error("Password not strong enough");
+    throw Error("Please use a stronger password");
   }
 
   const exists = await this.findOne({ email });
 
   if (exists) {
-    throw Error("Email already in use");
+    throw Error("Email already in use, please login");
   }
 
   const salt = await bcrypt.genSalt(10);

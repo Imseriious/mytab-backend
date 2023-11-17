@@ -71,10 +71,10 @@ const logout = async (req, res) => {
 
 // SignUp User
 const signupUser = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, inviteCode } = req.body;
 
   try {
-    const user = await User.signup(email, password);
+    const user = await User.signup(email, password, inviteCode);
     const accessToken = createAccessToken(user._id);
     const extensionToken = createExtensionToken(user._id);
     const refreshToken = createRefreshToken(user._id);
