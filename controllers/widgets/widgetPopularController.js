@@ -160,10 +160,9 @@ const getPopularToday = async (req, res) => {
     const currentDate = new Date().toISOString().split("T")[0]; // Get the current date in YYYY-MM-DD format
 
     let widgetPopular = await WidgetPopular.findOne(); // Fetch the record from the database
-    const oldReddit = widgetPopular.apps.reddit;
     if (!widgetPopular || widgetPopular.updatedDate !== currentDate) {
       const youtubePopular = await getYoutubePopular();
-      //const redditPopular = await getPopularReddit(); TODO Add redit back after 22/11
+      const redditPopular = undefined; //await getPopularReddit();
       const tiktokPopular = await getTikTokPopular();
       const twitterPopular = await getTwitterPopular();
 
@@ -171,11 +170,20 @@ const getPopularToday = async (req, res) => {
         widgetPopular = new WidgetPopular();
       }
 
+      if (youtubePopular) {
+        widgetPopular.apps.youtube = youtubePopular;
+      }
+      if (redditPopular) {
+        widgetPopular.apps.reddit = redditPopular; //Repalce after adding
+      }
+      if (tiktokPopular) {
+        widgetPopular.apps.tiktok = tiktokPopular;
+      }
+      if (twitterPopular) {
+        widgetPopular.apps.xContent = twitterPopular;
+      }
+
       widgetPopular.updatedDate = currentDate;
-      widgetPopular.apps.youtube = youtubePopular;
-      widgetPopular.apps.reddit = oldReddit; //Repalce after adding
-      widgetPopular.apps.tiktok = tiktokPopular;
-      widgetPopular.apps.xContent = twitterPopular;
 
       await widgetPopular.save(); // Save the updated record in the database
     }
