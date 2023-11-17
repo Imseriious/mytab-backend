@@ -11,7 +11,13 @@ const getRandomElement = (array) => {
 };
 
 const getWallpapers = (req, res) => {
-  const id = req.params.id; // Get the id from the route parameters
+  let id = req.params.id; // Get the id from the route parameters
+
+  if (id === "all") {
+    id = "best";
+  }
+
+
   const prefix = `${id}/`;
 
   const listObjectsUrl = `https://${BUCKET_NAME}.s3.amazonaws.com?list-type=2&prefix=${prefix}`;
