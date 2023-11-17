@@ -1,7 +1,7 @@
 const inviteCodes = [
   {
-    email: "elG@test.com",
-    code: "sleektab.ersx.SeCrEtCoDe.scsdx",
+    email: "sam@millerio.com",
+    code: "sleektab.sam",
     userType: "guser",
     socialPlatform: "1",
   },
