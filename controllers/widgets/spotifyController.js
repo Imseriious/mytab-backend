@@ -84,8 +84,12 @@ const spotifyCallback = async (req, res) => {
 
       // Redirecting or responding with tokens
       // (Modify this part as per your application's logic and security practices)
+      const redirectUri =
+        process.env.NODE_ENV === "production"
+          ? "http://localhost:3000"
+          : "https://www.sleektab.app";
       res.redirect(
-        "http://localhost:3000/spotify_auth_user/#" +
+        `${redirectUri}/spotify_auth_user/#` +
           querystring.stringify({
             access_token: access_token,
             refresh_token: refresh_token,
