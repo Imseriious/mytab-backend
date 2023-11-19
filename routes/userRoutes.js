@@ -7,7 +7,7 @@ const {
   updateUsername,
   updateSidebarItemsOrder,
   updateSidebarCategoryFoldersOrder,
-  updateDockItemsOrder
+  updateFavoritesbarItemsOrder
 } = require("../controllers/userController");
 const requireAuth = require("../middleware/requireAuth");
 
@@ -31,7 +31,7 @@ router.post("/sidebar_items_order", requireAuth, updateSidebarItemsOrder);
 
 router.post("/sidebar_category_order", requireAuth, updateSidebarCategoryFoldersOrder);
 
-//Update dock items order
-router.post("/dock_items_order", requireAuth, updateDockItemsOrder);
+//Update Favoritesbar items order
+router.post("/favoritesbar_items_order", requireAuth, updateFavoritesbarItemsOrder);
 
 module.exports = router;

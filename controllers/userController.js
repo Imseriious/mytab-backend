@@ -198,8 +198,8 @@ const updateSidebarCategoryFoldersOrder = async (req, res) => {
   }
 };
 
-// Update Dock Items Order
-const updateDockItemsOrder = async (req, res) => {
+// Update Favoritesbar Items Order
+const updateFavoritesbarItemsOrder = async (req, res) => {
   const { newOrder } = req.body;
 
   try {
@@ -213,7 +213,7 @@ const updateDockItemsOrder = async (req, res) => {
       res.status(404).json({ message: "User not found" });
     }
 
-    user.preferences.dockItemsOrder = newOrder;
+    user.preferences.favoritesBarItemsOrder = newOrder;
     await user.save();
 
     res.status(200).json({ preferences: user.preferences });
@@ -230,5 +230,5 @@ module.exports = {
   updateUsername,
   updateSidebarItemsOrder,
   updateSidebarCategoryFoldersOrder,
-  updateDockItemsOrder,
+  updateFavoritesbarItemsOrder,
 };
