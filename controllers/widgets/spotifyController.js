@@ -8,7 +8,10 @@ require("dotenv").config(); // Loads environment variables from a .env file into
 // Correct naming and ensure all necessary modules and variables are defined
 var client_id = "1fc9ae1fad4342abaee6c3fd6db759c9"; // Ensure this is your registered Spotify client ID
 var client_secret = process.env.SPOTIFY_CLIENT_SECRET; // Load client secret securely from environment variables
-var redirect_uri = "http://localhost:4000/spotify/callback"; // Ensure this matches the redirect URI registered on Spotify
+var redirect_uri =
+  process.env.NODE_ENV === "production"
+    ? "https://www.sleektab.app/spotify/callback"
+    : "http://localhost:4000/spotify/callback"; // Ensure this matches the redirect URI registered on Spotify
 
 const scope = [
   "streaming",
@@ -86,8 +89,8 @@ const spotifyCallback = async (req, res) => {
       // (Modify this part as per your application's logic and security practices)
       const redirectUri =
         process.env.NODE_ENV === "production"
-          ? "http://localhost:3000"
-          : "https://www.sleektab.app";
+          ? "https://www.sleektab.app"
+          : "http://localhost:3000";
       res.redirect(
         `${redirectUri}/spotify_auth_user/#` +
           querystring.stringify({
