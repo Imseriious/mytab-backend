@@ -68,7 +68,6 @@ const getWebsiteInfo = async (url) => {
 
       const title = getTitle(dom.window.document);
       const description = getDescription(dom.window.document);
-      console.log("addbookmark: ", dom.window.document);
 
       return {
         title: title,

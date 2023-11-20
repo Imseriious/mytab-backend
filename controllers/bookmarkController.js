@@ -8,7 +8,6 @@ const getWebsiteInfo = require("../utils/getWebsiteInfo");
 const addBookmark = async (req, res) => {
   let { name, url, folderId, faviconUrl } = req.body;
 
-  console.log("addbookmark: ", req.body);
 
   if (!url) {
     return res.status(400).json({ error: "URL are required" });

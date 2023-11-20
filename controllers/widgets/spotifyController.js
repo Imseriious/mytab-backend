@@ -114,7 +114,6 @@ const spotifyCallback = async (req, res) => {
 
 const spotifyRefreshToken = async (req, res) => {
   const { refreshToken } = req.body;
-  console.log("trying to refresh token");
   const params = new URLSearchParams();
   params.append("refresh_token", refreshToken);
   params.append("grant_type", "refresh_token");
@@ -132,13 +131,12 @@ const spotifyRefreshToken = async (req, res) => {
         },
       }
     );
-    console.log("Token refreshed, returning to frontend");
 
     const { access_token, expires_in } = response.data;
 
     res.json({ access_token, expires_in });
   } catch (error) {
-    console.log("error on trying to refresh token, error", error);
+    console.log("error on trying to refresh spotify token, error", error);
     res.status(400).json({ error: error.response.data });
   }
 };
@@ -157,7 +155,6 @@ const toggleShuffle = async (req, res) => {
       }
     );
 
-    console.log(`Shuffle state set to ${shuffleState}`);
   } catch (error) {
     console.error("Error toggling shuffle:", error);
   }

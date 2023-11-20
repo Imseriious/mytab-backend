@@ -46,7 +46,6 @@ const getCryptoInfo = async (req, res) => {
         selectedSymbols.includes(coin.symbol)
       );
     } else {
-      console.log("Crypto data old or not present, fetching new data...");
 
       const url =
         "https://pro-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest";
