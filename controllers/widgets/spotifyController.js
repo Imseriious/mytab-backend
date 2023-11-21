@@ -83,10 +83,9 @@ const spotifyCallback = async (req, res) => {
       );
 
       var access_token = response.data.access_token,
-        refresh_token = response.data.refresh_token;
+        refresh_token = response.data.refresh_token,
+        expires_in = response.data.expires_in;
 
-      // Redirecting or responding with tokens
-      // (Modify this part as per your application's logic and security practices)
       const redirectUri =
         process.env.NODE_ENV === "production"
           ? "https://www.sleektab.app"
@@ -96,6 +95,7 @@ const spotifyCallback = async (req, res) => {
           querystring.stringify({
             access_token: access_token,
             refresh_token: refresh_token,
+            expires_in: expires_in
           })
       );
     } catch (error) {
@@ -154,9 +154,8 @@ const toggleShuffle = async (req, res) => {
         },
       }
     );
-
   } catch (error) {
-    console.error("Error toggling shuffle:", error);
+    console.error("Error toggling shuffle:", error.response.data);
   }
 };
 
@@ -176,7 +175,7 @@ const loadPlaylist = async (req, res) => {
 
     res.send("Playlist playback started");
   } catch (error) {
-    console.error("Error in starting playlist playback:", error);
+    console.error("Error in starting playlist playback:", error.response.data);
     res.status(error.response.status).json({ error: error.response.data });
   }
 };
@@ -213,7 +212,7 @@ const fetchUserPlaylists = async (req, res) => {
 
     res.json(playlists);
   } catch (error) {
-    console.error("Error fetching user playlists:", error.response);
+    console.error("Error fetching user playlists:", error.response.data);
     res.status(error.response.status).json({ error: error.response.data });
   }
 };
@@ -236,7 +235,10 @@ const controlPlayback = async (req, res) => {
     });
     res.send(`Playback ${action} successful`);
   } catch (error) {
-    console.error(`Error controlling playback: ${action}`);
+    console.error(
+      `Error controlling playback: ${action}, error: `,
+      error.response.data
+    );
     res.status(error.response.status).json({ error: error.response.data });
   }
 };
@@ -252,7 +254,7 @@ const checkIfSongLiked = async (req, res) => {
 
     res.json({ isLiked: response.data[0] });
   } catch (error) {
-    console.error("Error checking if song is liked:", error);
+    console.error("Error checking if song is liked:", error.response.data);
     res.status(error.response.status).json({ error: error.response.data });
   }
 };
@@ -272,7 +274,10 @@ const likeOrDislikeSong = async (req, res) => {
     });
     res.send(`Song ${like ? "liked" : "disliked"} successfully`);
   } catch (error) {
-    console.error(`Error ${like ? "liking" : "disliking"} song:`, error);
+    console.error(
+      `Error ${like ? "liking" : "disliking"} song:`,
+      error.response.data
+    );
     res.status(error.response.status).json({ error: error.response.data });
   }
 };
