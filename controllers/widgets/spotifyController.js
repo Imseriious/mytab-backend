@@ -10,7 +10,7 @@ var client_id = "1fc9ae1fad4342abaee6c3fd6db759c9"; // Ensure this is your regis
 var client_secret = process.env.SPOTIFY_CLIENT_SECRET; // Load client secret securely from environment variables
 var redirect_uri =
   process.env.NODE_ENV === "production"
-    ? "https://www.sleektab.app/spotify/callback"
+    ? "https://www.api.sleektab.app/spotify/callback"
     : "http://localhost:4000/spotify/callback"; // Ensure this matches the redirect URI registered on Spotify
 
 const scope = [
