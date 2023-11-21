@@ -8,14 +8,18 @@ const getWebsiteInfo = require("../utils/getWebsiteInfo");
 const addBookmark = async (req, res) => {
   let { name, url, folderId, faviconUrl } = req.body;
 
-  console.log("addbookmark: ", req.body);
-
+  let currentFolderName;
   if (!url) {
     return res.status(400).json({ error: "URL are required" });
   }
 
   if (folderId === "none") {
-    folderId === null;
+    folderId = null;
+  } else {
+    const folder = await Folder.findById(folderId);
+    if (folder) {
+      currentFolderName = folder.name;
+    }
   }
 
   let iconUrl;
@@ -42,6 +46,7 @@ const addBookmark = async (req, res) => {
       url,
       iconUrl,
       folderId,
+      currentFolderName,
       description,
       userId: req.user._id,
     });
@@ -109,16 +114,29 @@ const updateBookmark = async (req, res) => {
         .json({ error: "Not authorized to update this bookmark" });
     }
 
-    if (name) bookmark.name = name;
-    if (url) {
+    if (name && name !== bookmark.name) bookmark.name = name;
+    if (url && url !== bookmark.url) {
       let websiteDescription = await getWebsiteInfo(url);
 
       bookmark.url = url;
       bookmark.iconUrl = await getBookmarkIconUrl(url);
       bookmark.description = websiteDescription.description;
     }
-    if (folderId) {
-      bookmark.folderId = folderId === ("none" || "None") ? null : folderId;
+
+    if (folderId && folderId !== bookmark.folderId) {
+      if (folderId === ("none" || "None")) {
+
+        bookmark.folderId = null;
+        bookmark.currentFolderName = null;
+      } else {
+
+        const folder = await Folder.findById(folderId);
+        if (folder) {
+
+          bookmark.currentFolderName = folder.name;
+          bookmark.folderId = folderId;
+        }
+      }
     }
 
     await bookmark.save();
@@ -243,7 +261,6 @@ const importBrowserBookmarks = async (req, res) => {
             const bookmarksFromFolders = bookmarksToCreate.filter(
               (bookmark) => bookmark.folderName
             );
-
             if (bookmarksFromFolders.length > 0) {
               const formattedBookmarksFromFolder = bookmarksFromFolders.map(
                 (bookmark) => ({
@@ -252,6 +269,9 @@ const importBrowserBookmarks = async (req, res) => {
                   iconUrl: bookmark.iconUrl,
                   description: bookmark.description,
                   userId: bookmark.userId,
+                  folderName: newCreatedFolders.filter(
+                    (newFolder) => newFolder.name === bookmark.folderName
+                  )[0].name,
                   folderId: newCreatedFolders.filter(
                     (newFolder) => newFolder.name === bookmark.folderName
                   )[0]._id,

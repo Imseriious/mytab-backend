@@ -71,7 +71,6 @@ const bugReport = async (req, res) => {
 };
 
 const accessRequest = async (req, res) => {
-  console.log("yoo");
   try {
     const { email, socialPlatform, userType } = req.body;
     if (!email || !socialPlatform || !userType) {
@@ -85,7 +84,6 @@ const accessRequest = async (req, res) => {
     }
 
     const currentAccessRequest = await AccessRequest.findOne({ email: email });
-    console.log(currentAccessRequest);
     if (currentAccessRequest) {
       res.status(400).json({
         error:

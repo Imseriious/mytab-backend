@@ -22,6 +22,10 @@ const bookmarkSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    currentFolderName: {
+      type: String,
+      required: false,
+    },
     folderId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Folder",

@@ -48,7 +48,7 @@ const userSchema = new Schema({
       ],
       default: [],
     },
-    dockItemsOrder: {
+    favoritesBarItemsOrder: {
       type: [String],
     },
   },
