@@ -199,6 +199,30 @@ const updateSidebarCategoryFoldersOrder = async (req, res) => {
 };
 
 // Update Favoritesbar Items Order
+const updateUserThemeColor = async (req, res) => {
+  const { newColor } = req.body;
+
+  try {
+    if (!newColor) {
+      res.status(500).json({ error: "Color is required" });
+    }
+
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
+    }
+
+    user.preferences.theme.color = newColor;
+    await user.save();
+
+    res.status(200).json({ preferences: user.preferences });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+// Update Favoritesbar Items Order
 const updateFavoritesbarItemsOrder = async (req, res) => {
   const { newOrder } = req.body;
 
@@ -231,4 +255,5 @@ module.exports = {
   updateSidebarItemsOrder,
   updateSidebarCategoryFoldersOrder,
   updateFavoritesbarItemsOrder,
+  updateUserThemeColor
 };

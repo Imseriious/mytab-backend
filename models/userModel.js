@@ -25,6 +25,12 @@ const userSchema = new Schema({
       type: String,
       default: "best",
     },
+    theme: {
+      color: {
+        type: String,
+        default: "pink",
+      }
+    },
     cryptoWidget: {
       type: [String],
       default: ["BTC", "ETH"],
