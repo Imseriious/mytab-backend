@@ -160,10 +160,15 @@ const getPopularToday = async (req, res) => {
     const currentDate = new Date().toISOString().split("T")[0]; // Get the current date in YYYY-MM-DD format
 
     let widgetPopular = await WidgetPopular.findOne(); // Fetch the record from the database
-    if (!widgetPopular || widgetPopular.updatedDate !== currentDate) {
+
+    const shouldFetchData =
+      (!widgetPopular || widgetPopular.updatedDate !== currentDate) &&
+      process.env.NODE_ENV !== "development";
+
+    if (shouldFetchData) {
       const youtubePopular = await getYoutubePopular();
-      const redditPopular = undefined; //await getPopularReddit();
-      const tiktokPopular = await getTikTokPopular();
+      const redditPopular = undefined; //await getPopularReddit(); TODO Add both first of month
+      const tiktokPopular = undefined; // await getTikTokPopular();
       const twitterPopular = await getTwitterPopular();
 
       if (!widgetPopular) {
@@ -187,6 +192,13 @@ const getPopularToday = async (req, res) => {
 
       await widgetPopular.save(); // Save the updated record in the database
     }
+
+    console.log(
+      "shouldFetchData is ",
+      shouldFetchData ? true : false,
+      "env is: ",
+      process.env.NODE_ENV
+    );
 
     res.status(200).json(widgetPopular.apps); // Return the content (either fetched or from the database)
   } catch (error) {
