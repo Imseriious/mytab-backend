@@ -1,6 +1,5 @@
 const User = require("../models/userModel");
 const WallpapersPack = require("../models/wallpapersModel");
-const { uploadWallpaperPack } = require("../utils/wallpaperHelpers");
 
 // Helper function to get a random element from an array
 const getRandomElement = (array) => {
@@ -84,38 +83,40 @@ const createWallpaperPack = async (req, res) => {
 
   const allowedUsers = ["sam@millerio.com", "test@test.com"];
 
-  try {
-    const { localPackName, isLive } = req.body;
+  // try {
+  //   const { localPackName, isLive } = req.body;
 
-    if (!allowedUsers.includes(user.email)) {
-      res.status(500).json("Not allowed...");
-      console.log("no email");
-      return;
-    }
+  //   if (!allowedUsers.includes(user.email)) {
+  //     res.status(500).json("Not allowed...");
+  //     console.log("no email");
+  //     return;
+  //   }
 
-    const dataObject = await uploadWallpaperPack(localPackName, isLive);
-    const { packName, storageId, mediaLinks, description } = dataObject;
-    console.log(dataObject);
-    const newWallpaperPack = new WallpapersPack({
-      userId: "65579fce51c3546703ad1bc9", //Production
-      creator: "SleekTab Team",
-      name: packName,
-      storageId: storageId,
-      mediaLinks: mediaLinks,
-      description: description,
-      marketApproved: true,
-      live: isLive ? true : false,
-    });
+  //   // const { uploadWallpaperPack } = require("../utils/wallpaperHelpers");
+  //   // const dataObject = await uploadWallpaperPack(localPackName, isLive); removed in production
 
-    console.log("yee", newWallpaperPack);
+  //   const { packName, storageId, mediaLinks, description } = dataObject;
 
-    await newWallpaperPack.save();
+  //   const newWallpaperPack = new WallpapersPack({
+  //     userId: "65579fce51c3546703ad1bc9", //Production
+  //     creator: "SleekTab Team",
+  //     name: packName,
+  //     storageId: storageId,
+  //     mediaLinks: mediaLinks,
+  //     description: description,
+  //     marketApproved: true,
+  //     live: isLive ? true : false,
+  //   });
 
-    res.status(200).json({ newWallpaperPack });
-  } catch (error) {
-    res.status(500).json({ message: "Couldn't create pack", error });
-    console.error(error);
-  }
+  //   console.log("yee", newWallpaperPack);
+
+  //   await newWallpaperPack.save();
+
+  //   res.status(200).json({ newWallpaperPack });
+  // } catch (error) {
+  //   res.status(500).json({ message: "Couldn't create pack", error });
+  //   console.error(error);
+  // }
 };
 
 module.exports = {
