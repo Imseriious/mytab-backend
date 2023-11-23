@@ -35,7 +35,9 @@ const getUserFolders = async (req, res) => {
 const getFolderBookmarks = async (req, res) => {
   try {
     const folderId = req.params.id; //In params not body
-    const folderBookmarks = await Bookmark.find({ folderId: folderId });
+    const folderBookmarks = await Bookmark.find({ folderId: folderId }).sort({
+      createdAt: -1,
+    });
     const folderBookmarksResponse = {
       length: folderBookmarks.length,
       folderBookmarks: folderBookmarks,
@@ -73,12 +75,10 @@ const deleteFolder = async (req, res) => {
 
     const hadBookmarks = folderBookmarks && folderBookmarks.length > 0;
 
-    res
-      .status(200)
-      .json({
-        message: "Folder deleted successfully",
-        hadBookmarks: hadBookmarks,
-      });
+    res.status(200).json({
+      message: "Folder deleted successfully",
+      hadBookmarks: hadBookmarks,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to delete the folder" });

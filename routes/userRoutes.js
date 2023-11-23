@@ -7,7 +7,8 @@ const {
   updateUsername,
   updateSidebarItemsOrder,
   updateSidebarCategoryFoldersOrder,
-  updateFavoritesbarItemsOrder
+  updateFavoritesbarItemsOrder,
+  updateUserThemeColor,
 } = require("../controllers/userController");
 const requireAuth = require("../middleware/requireAuth");
 
@@ -29,9 +30,20 @@ router.post("/update_username", requireAuth, updateUsername);
 
 router.post("/sidebar_items_order", requireAuth, updateSidebarItemsOrder);
 
-router.post("/sidebar_category_order", requireAuth, updateSidebarCategoryFoldersOrder);
+router.post(
+  "/sidebar_category_order",
+  requireAuth,
+  updateSidebarCategoryFoldersOrder
+);
 
 //Update Favoritesbar items order
-router.post("/favoritesbar_items_order", requireAuth, updateFavoritesbarItemsOrder);
+router.post(
+  "/favoritesbar_items_order",
+  requireAuth,
+  updateFavoritesbarItemsOrder
+);
+
+//Update Theme color
+router.post("/theme_color", requireAuth, updateUserThemeColor);
 
 module.exports = router;
