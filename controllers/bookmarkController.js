@@ -125,14 +125,11 @@ const updateBookmark = async (req, res) => {
 
     if (folderId && folderId !== bookmark.folderId) {
       if (folderId === ("none" || "None")) {
-
         bookmark.folderId = null;
         bookmark.currentFolderName = null;
       } else {
-
         const folder = await Folder.findById(folderId);
         if (folder) {
-
           bookmark.currentFolderName = folder.name;
           bookmark.folderId = folderId;
         }
@@ -147,6 +144,32 @@ const updateBookmark = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to update the bookmark" });
+  }
+};
+
+const searchBookmarks = async (req, res) => {
+  const query = req.query.q;
+  if (!query) {
+    return res.status(400).json({ error: "Search query is required" });
+  }
+
+  try {
+    const userId = req.user._id;
+    const regex = new RegExp(query, "i");
+
+    const bookmarks = await Bookmark.find({
+      userId: userId,
+      $or: [
+        { name: { $regex: regex } },
+        { url: { $regex: regex } },
+        { description: { $regex: regex } },
+      ],
+    });
+
+    res.status(200).json(bookmarks);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to search bookmarks" });
   }
 };
 
@@ -308,4 +331,5 @@ module.exports = {
   deleteBookmark,
   updateBookmark,
   importBrowserBookmarks,
+  searchBookmarks
 };
