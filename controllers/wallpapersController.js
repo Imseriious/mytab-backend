@@ -9,11 +9,15 @@ const getRandomElement = (array) => {
 
 const getWallpapers = async (req, res) => {
   try {
+    const allWallpapers = await WallpapersPack.find(); //TODO only the ones the user has
+
     let selectedWallpaper;
     if (req.params.id) {
       selectedWallpaper = await WallpapersPack.findById(req.params.id);
+      if (!selectedWallpaper) {
+        selectedWallpaper = getRandomElement(allWallpapers);
+      }
     } else {
-      const allWallpapers = await WallpapersPack.find(); //TODO only the ones the user has
       selectedWallpaper = getRandomElement(allWallpapers);
     }
     if (!selectedWallpaper) {

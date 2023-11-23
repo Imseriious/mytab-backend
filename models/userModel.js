@@ -23,7 +23,7 @@ const userSchema = new Schema({
   preferences: {
     wallpaperCollection: {
       type: String,
-      default: "best",
+      default: "",
     },
     theme: {
       color: {
