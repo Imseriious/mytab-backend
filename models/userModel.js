@@ -119,7 +119,7 @@ userSchema.statics.signup = async function (email, password, inviteCode) {
 
   const user = await this.create({
     email,
-    username: email,
+    username: email.toLowerCase(),
     password: hash,
   });
 

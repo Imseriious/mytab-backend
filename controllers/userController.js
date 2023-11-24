@@ -123,7 +123,7 @@ const updateUsername = async (req, res) => {
       res.status(404).json({ message: "User not found" });
     }
 
-    user.username = username;
+    user.username = username.toLowerCase();
     await user.save();
 
     res.status(200).json({ message: "Username updated correctly" });
