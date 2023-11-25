@@ -123,7 +123,7 @@ const updateUsername = async (req, res) => {
       res.status(404).json({ message: "User not found" });
     }
 
-    user.username = username.toLowerCase();
+    user.username = username;
     await user.save();
 
     res.status(200).json({ message: "Username updated correctly" });
@@ -246,6 +246,29 @@ const updateFavoritesbarItemsOrder = async (req, res) => {
   }
 };
 
+// Update Favoritesbar Items Order
+const collapsedBookmarks = async (req, res) => {
+  const { isCollapsed } = req.body;
+
+  try {
+    if (isCollapsed === undefined) {
+      res.status(500).json({ error: "Boolean is required" });
+    }
+
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
+    }
+
+    user.preferences.collapsedBookmarks = isCollapsed;
+    await user.save();
+    res.status(200).json({ preferences: user.preferences });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
 module.exports = {
   signupUser,
   loginUser,
@@ -255,5 +278,6 @@ module.exports = {
   updateSidebarItemsOrder,
   updateSidebarCategoryFoldersOrder,
   updateFavoritesbarItemsOrder,
-  updateUserThemeColor
+  updateUserThemeColor,
+  collapsedBookmarks,
 };

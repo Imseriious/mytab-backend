@@ -193,13 +193,6 @@ const getPopularToday = async (req, res) => {
       await widgetPopular.save(); // Save the updated record in the database
     }
 
-    console.log(
-      "shouldFetchData is ",
-      shouldFetchData ? true : false,
-      "env is: ",
-      process.env.NODE_ENV
-    );
-
     res.status(200).json(widgetPopular.apps); // Return the content (either fetched or from the database)
   } catch (error) {
     res.status(500).json({ error: error.message });

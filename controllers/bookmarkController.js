@@ -101,7 +101,7 @@ const deleteBookmark = async (req, res) => {
 const updateBookmark = async (req, res) => {
   try {
     const bookmarkId = req.params.id;
-    const { name, url, folderId } = req.body;
+    const { name, url, folderId, description } = req.body;
     const bookmark = await Bookmark.findById(bookmarkId);
 
     if (!bookmark) {
@@ -115,12 +115,11 @@ const updateBookmark = async (req, res) => {
     }
 
     if (name && name !== bookmark.name) bookmark.name = name;
+    bookmark.description = description;
+    console.log(description, "sd", bookmark);
     if (url && url !== bookmark.url) {
-      let websiteDescription = await getWebsiteInfo(url);
-
       bookmark.url = url;
       bookmark.iconUrl = await getBookmarkIconUrl(url);
-      bookmark.description = websiteDescription.description;
     }
 
     if (folderId && folderId !== bookmark.folderId) {
@@ -331,5 +330,5 @@ module.exports = {
   deleteBookmark,
   updateBookmark,
   importBrowserBookmarks,
-  searchBookmarks
+  searchBookmarks,
 };
