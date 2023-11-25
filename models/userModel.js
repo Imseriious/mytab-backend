@@ -29,7 +29,12 @@ const userSchema = new Schema({
       color: {
         type: String,
         default: "pink",
-      }
+      },
+    },
+    collapsedBookmarks: {
+      type: Boolean,
+      required: false,
+      default: false,
     },
     cryptoWidget: {
       type: [String],
@@ -92,7 +97,9 @@ userSchema.statics.signup = async function (email, password, inviteCode) {
     throw Error("Email is not valid");
   }
 
-  const invitation = inviteCodes.filter((invite) => email === invite.email.toLowerCase())[0];
+  const invitation = inviteCodes.filter(
+    (invite) => email === invite.email.toLowerCase()
+  )[0];
 
   if (!invitation) {
     throw Error("User not invited yet, apply for early access if you didn't");

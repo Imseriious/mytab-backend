@@ -20,7 +20,6 @@ const bookmarkSchema = new mongoose.Schema(
     },
     description: {
       type: String,
-      required: true,
     },
     currentFolderName: {
       type: String,
