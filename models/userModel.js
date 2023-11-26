@@ -20,12 +20,21 @@ const userSchema = new Schema({
     required: false,
     unique: true,
   },
+  installedWallpapers: {
+    type: [String],
+    default: [],
+    required: false,
+  },
   preferences: {
     wallpaperCollection: {
       type: String,
-      default: "",
+      default: "default",
     },
     theme: {
+      style: {
+        type: String,
+        default: "light",
+      },
       color: {
         type: String,
         default: "pink",

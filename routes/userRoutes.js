@@ -9,7 +9,8 @@ const {
   updateSidebarCategoryFoldersOrder,
   updateFavoritesbarItemsOrder,
   updateUserThemeColor,
-  collapsedBookmarks
+  updateUserBlurStyle,
+  collapsedBookmarks,
 } = require("../controllers/userController");
 const requireAuth = require("../middleware/requireAuth");
 
@@ -46,6 +47,9 @@ router.post(
 
 //Update Theme color
 router.post("/theme_color", requireAuth, updateUserThemeColor);
+
+//Update Blur style
+router.post("/blur_style", requireAuth, updateUserBlurStyle);
 
 //Update Bookmark collapsed
 router.post("/bookmark_collapse", requireAuth, collapsedBookmarks);
