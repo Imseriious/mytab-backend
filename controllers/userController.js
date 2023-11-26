@@ -198,7 +198,7 @@ const updateSidebarCategoryFoldersOrder = async (req, res) => {
   }
 };
 
-// Update Favoritesbar Items Order
+// Update Theme color
 const updateUserThemeColor = async (req, res) => {
   const { newColor } = req.body;
 
@@ -214,6 +214,30 @@ const updateUserThemeColor = async (req, res) => {
     }
 
     user.preferences.theme.color = newColor;
+    await user.save();
+
+    res.status(200).json({ preferences: user.preferences });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+// Update BlurStyle
+const updateUserBlurStyle = async (req, res) => {
+  const { newStyle } = req.body;
+
+  try {
+    if (!newStyle) {
+      res.status(500).json({ error: "Style is required" });
+    }
+
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
+    }
+
+    user.preferences.theme.style = newStyle;
     await user.save();
 
     res.status(200).json({ preferences: user.preferences });
@@ -279,5 +303,6 @@ module.exports = {
   updateSidebarCategoryFoldersOrder,
   updateFavoritesbarItemsOrder,
   updateUserThemeColor,
+  updateUserBlurStyle,
   collapsedBookmarks,
 };

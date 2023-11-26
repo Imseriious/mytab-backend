@@ -65,7 +65,6 @@ const addToLibrary = async (req, res) => {
 
     user.save();
 
-
     res.status(200).json({ message: "Wallpaper list installed" });
   } catch (error) {
     console.log(error.message);
@@ -97,7 +96,6 @@ const deleteFromLibrary = async (req, res) => {
 
     user.save();
 
-
     res.status(200).json({ message: "Wallpaper deleted" });
   } catch (error) {
     console.log(error.message);
@@ -107,26 +105,43 @@ const deleteFromLibrary = async (req, res) => {
 
 const getWallpaper = async (req, res) => {
   try {
-    const allWallpapers = await WallpapersPack.find();
-    let selectedWallpaper;
-    if (req.params.id && req.params.id !== "default") {
-      selectedWallpaper = await WallpapersPack.findById(req.params.id);
-      if (!selectedWallpaper) {
-        selectedWallpaper = getRandomElement(allWallpapers);
+    const allWallpaperPacks = await WallpapersPack.find();
+    const user = await User.findById(req.user._id);
+
+    const userWallpaperPacksIds = user.installedWallpapers;
+
+    let selectedWallpaperPack;
+
+    if (req.params.id) {
+      if (req.params.id === "default") {
+        //Random
+        selectedWallpaperPack = getRandomElement(allWallpaperPacks);
+      } else if (req.params.id === "mix") {
+        const userWallpaperPacks = allWallpaperPacks.filter((pack) =>
+          userWallpaperPacksIds.includes(pack.id)
+        );
+        selectedWallpaperPack = getRandomElement(userWallpaperPacks);
+
+        //Random from user collections
+      } else {
+        selectedWallpaperPack = await WallpapersPack.findById(req.params.id);
       }
-    } else {
-      selectedWallpaper = getRandomElement(allWallpapers);
-    }
-    if (!selectedWallpaper) {
-      res.status(404).json({ error: "wallpaperpack not found" });
-      return;
+
+      if (!selectedWallpaperPack) {
+        conosle.log("Fallback error finding wallpaper");
+        selectedWallpaperPack = getRandomElement(allWallpaperPacks);
+      }
     }
 
-    const randomFileUrl = getRandomElement(selectedWallpaper.mediaLinks);
+    if (!selectedWallpaperPack) {
+      selectedWallpaperPack = getRandomElement(allWallpaperPacks);
+    }
+
+    const randomFileUrl = getRandomElement(selectedWallpaperPack.mediaLinks);
 
     res
       .status(200)
-      .json({ url: randomFileUrl, isLive: selectedWallpaper.live });
+      .json({ url: randomFileUrl, isLive: selectedWallpaperPack.live });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
