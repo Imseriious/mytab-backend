@@ -20,6 +20,11 @@ const userSchema = new Schema({
     required: false,
     unique: true,
   },
+  installedWallpapers: {
+    type: [String],
+    default: [],
+    required: false,
+  },
   preferences: {
     wallpaperCollection: {
       type: String,

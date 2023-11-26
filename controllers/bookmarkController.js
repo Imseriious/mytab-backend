@@ -116,7 +116,6 @@ const updateBookmark = async (req, res) => {
 
     if (name && name !== bookmark.name) bookmark.name = name;
     bookmark.description = description;
-    console.log(description, "sd", bookmark);
     if (url && url !== bookmark.url) {
       bookmark.url = url;
       bookmark.iconUrl = await getBookmarkIconUrl(url);

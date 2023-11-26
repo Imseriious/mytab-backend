@@ -7,12 +7,109 @@ const getRandomElement = (array) => {
   return array[Math.floor(Math.random() * array.length)];
 };
 
-const getWallpapers = async (req, res) => {
+const getAllWallpapersPacks = async (req, res) => {
   try {
-    const allWallpapers = await WallpapersPack.find(); //TODO only the ones the user has
+    const availableWallpaperPacks = await WallpapersPack.find();
 
+    if (!availableWallpaperPacks || availableWallpaperPacks.length < 1) {
+      res.status(200).json({ availableWallpaperPacks: [] });
+      return;
+    }
+
+    const user = await User.findById(req.user._id);
+    const userWallpapers = user.installedWallpapers || [];
+
+    const returnData = availableWallpaperPacks.map((pack) => ({
+      wallpapersCount: pack.mediaLinks.length,
+      thumbnail: pack.mediaLinks[0],
+      name: pack.name,
+      creator: pack.creator,
+      live: pack.live,
+      cost: pack.cost,
+      ownedByUser: userWallpapers.includes(pack._id),
+      description: pack.description,
+      id: pack._id,
+    }));
+
+    res.status(200).json({ availableWallpaperPacks: returnData });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+const addToLibrary = async (req, res) => {
+  try {
+    const { wallpaperId } = req.body;
+    if (!wallpaperId) {
+      res.status(404).json({ message: "wallpaper id is required" });
+    }
+
+    const wallpaperPack = await WallpapersPack.findById(wallpaperId);
+
+    if (!wallpaperPack) {
+      res.status(404).json({ message: "wallpaper pack not found" });
+    }
+
+    const user = await User.findById(req.user._id);
+
+    const currentInstalledWallpapersList = user.installedWallpapers;
+    let newInstalledWallpapersList;
+    if (currentInstalledWallpapersList) {
+      newInstalledWallpapersList = currentInstalledWallpapersList;
+      newInstalledWallpapersList.push(wallpaperId);
+    } else {
+      newInstalledWallpapersList = [wallpaperId];
+    }
+
+    user.installedWallpapers = newInstalledWallpapersList;
+
+    user.save();
+
+
+    res.status(200).json({ message: "Wallpaper list installed" });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({ message: "Could not install wallpaper" });
+  }
+};
+
+const deleteFromLibrary = async (req, res) => {
+  try {
+    const { wallpaperId } = req.body;
+    if (!wallpaperId) {
+      res.status(404).json({ message: "wallpaper id is required" });
+    }
+
+    const wallpaperPack = await WallpapersPack.findById(wallpaperId);
+
+    if (!wallpaperPack) {
+      res.status(404).json({ message: "wallpaper pack not found" });
+    }
+
+    const user = await User.findById(req.user._id);
+
+    const currentInstalledWallpapersList = user.installedWallpapers;
+    let newInstalledWallpapersList = currentInstalledWallpapersList.filter(
+      (id) => id !== wallpaperId
+    );
+
+    user.installedWallpapers = newInstalledWallpapersList;
+
+    user.save();
+
+
+    res.status(200).json({ message: "Wallpaper deleted" });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({ message: "Could not delete wallpaper" });
+  }
+};
+
+const getWallpaper = async (req, res) => {
+  try {
+    const allWallpapers = await WallpapersPack.find();
     let selectedWallpaper;
-    if (req.params.id) {
+    if (req.params.id && req.params.id !== "default") {
       selectedWallpaper = await WallpapersPack.findById(req.params.id);
       if (!selectedWallpaper) {
         selectedWallpaper = getRandomElement(allWallpapers);
@@ -36,14 +133,15 @@ const getWallpapers = async (req, res) => {
 };
 
 const getUserWallpapersPacks = async (req, res) => {
-  //Should only getUserWallpapersPacks from the user.
   try {
-    // const user = await User.findById(req.user._id);
-    // const userPacksIds = user.wallpapersPacks;
-    const availableWallpaperPacks = await WallpapersPack.find();
+    const user = await User.findById(req.user._id);
+    const userPacksIds = user.installedWallpapers;
+    const availableWallpaperPacks = await WallpapersPack.find({
+      _id: { $in: userPacksIds },
+    });
 
-    if (!availableWallpaperPacks) {
-      res.status(404).json({ error: "WallpaperPacks not found" });
+    if (!availableWallpaperPacks || availableWallpaperPacks.length < 1) {
+      res.status(200).json({ wallpaperPacks: [] });
       return;
     }
 
@@ -92,12 +190,11 @@ const createWallpaperPack = async (req, res) => {
 
   //   if (!allowedUsers.includes(user.email)) {
   //     res.status(500).json("Not allowed...");
-  //     console.log("no email");
   //     return;
   //   }
 
-  //   // const { uploadWallpaperPack } = require("../utils/wallpaperHelpers");
-  //   // const dataObject = await uploadWallpaperPack(localPackName, isLive); removed in production
+  //   const { uploadWallpaperPack } = require("../utils/wallpaperHelpers");
+  //   const dataObject = await uploadWallpaperPack(localPackName, isLive);
 
   //   const { packName, storageId, mediaLinks, description } = dataObject;
 
@@ -112,8 +209,6 @@ const createWallpaperPack = async (req, res) => {
   //     live: isLive ? true : false,
   //   });
 
-  //   console.log("yee", newWallpaperPack);
-
   //   await newWallpaperPack.save();
 
   //   res.status(200).json({ newWallpaperPack });
@@ -124,8 +219,11 @@ const createWallpaperPack = async (req, res) => {
 };
 
 module.exports = {
-  getWallpapers,
+  getWallpaper,
   changeWallpaperCollection,
   createWallpaperPack,
   getUserWallpapersPacks,
+  addToLibrary,
+  deleteFromLibrary,
+  getAllWallpapersPacks,
 };
