@@ -71,10 +71,9 @@ const logout = async (req, res) => {
 
 // SignUp User
 const signupUser = async (req, res) => {
-  const { email, password, inviteCode } = req.body;
-
+  const { email, password, username, inviteCode } = req.body;
   try {
-    const user = await User.signup(email, password, inviteCode);
+    const user = await User.signup(email, password, username, inviteCode);
     const accessToken = createAccessToken(user._id);
     const extensionToken = createExtensionToken(user._id);
     const refreshToken = createRefreshToken(user._id);
@@ -91,10 +90,12 @@ const signupUser = async (req, res) => {
       accessToken,
       extensionToken,
       email,
+      username: username,
       preferences: userPreferences,
     });
   } catch (error) {
     res.status(400).json({ error: error.message });
+    return;
   }
 };
 
