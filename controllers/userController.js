@@ -54,6 +54,7 @@ const loginUser = async (req, res) => {
       accessToken,
       extensionToken,
       email,
+      userId: user._id,
       preferences: user.preferences,
       username: user.username,
     });
@@ -90,6 +91,7 @@ const signupUser = async (req, res) => {
       accessToken,
       extensionToken,
       email,
+      userId: user._id,
       username: username,
       preferences: userPreferences,
     });

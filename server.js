@@ -19,6 +19,7 @@ const ticketsRoutes = require("./routes/ticketsRouters");
 const assistantRoutes = require("./routes/assistantRoutes");
 const profileRoutes = require("./routes/profileRoutes");
 const newsRouter = require("./routes/newsRoutes");
+const speakUpRoutes = require("./routes/speakUpRoutes");
 
 //Import Widget Routes
 const widgetQuotesRoutes = require("./routes/widgets/widgetQuotesRoutes");
@@ -84,6 +85,7 @@ app.use("/tickets", ticketsRoutes);
 app.use("/assistant", assistantRoutes);
 app.use("/profile", profileRoutes);
 app.use("/news", newsRouter);
+app.use("/speakup/", speakUpRoutes);
 
 // Use Widget Routes
 app.use("/widgetquotes", widgetQuotesRoutes);
