@@ -35,6 +35,11 @@ const userSchema = new Schema({
       type: String,
       default: "default",
     },
+    newsSources: {
+      type: [String],
+      default: [],
+      required: false,
+    },
     theme: {
       style: {
         type: String,
