@@ -22,7 +22,6 @@ const newsRouter = require("./routes/newsRoutes");
 
 //Import Widget Routes
 const widgetQuotesRoutes = require("./routes/widgets/widgetQuotesRoutes");
-const widgetPopularRoutes = require("./routes/widgets/widgetPopularRoutes");
 const widgetWeatherRoutes = require("./routes/widgets/widgetWeatherRoutes");
 const widgetCryptoRoutes = require("./routes/widgets/widgetCryptoRoutes");
 const spotifyRoutes = require("./routes/widgets/spotifyRoutes");
@@ -88,7 +87,6 @@ app.use("/news", newsRouter);
 
 // Use Widget Routes
 app.use("/widgetquotes", widgetQuotesRoutes);
-app.use("/widgetPopular", widgetPopularRoutes);
 app.use("/widgetWeather", widgetWeatherRoutes);
 app.use("/widgetCrypto", widgetCryptoRoutes);
 app.use("/spotify", spotifyRoutes);

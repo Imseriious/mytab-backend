@@ -52,57 +52,60 @@ async function getCategoryArticles(category) {
     return articles;
   }
 
-  const twoDaysAgo = new Date(Date.now() - 48 * 60 * 60 * 1000); // 48 hours ago
+  const twoDaysAgo = new Date(Date.now() - 72 * 60 * 60 * 1000); // 48 hours ago
 
   for (const source of newsSources[category]) {
-    console.log('source', source)
     try {
       const response = await axios.get(source.rssUrl);
       const result = await xml2js.parseStringPromise(response.data);
       const items = result.rss.channel[0].item;
+      if (!items) {
+        console.log("No items ? ", source);
+      }
+      if (items) {
+        for (let i = 0; i < items.length; i++) {
+          const item = items[i];
 
-      for (let i = 0; i < items.length; i++) {
-        const item = items[i];
+          const pubDateString =
+            item.pubDate && item.pubDate[0] ? item.pubDate[0] : null;
 
-        const pubDateString =
-          item.pubDate && item.pubDate[0] ? item.pubDate[0] : null;
+          if (!pubDateString) {
+            continue; // Skip if pubDate is not available
+          }
 
-        if (!pubDateString) {
-          continue; // Skip if pubDate is not available
+          const pubDate = new Date(pubDateString);
+
+          if (isNaN(pubDate.getTime()) || pubDate < twoDaysAgo) {
+            continue; // Skip articles older than 48 hours or with invalid date
+          }
+
+          const title =
+            item.title && item.title[0] ? cleanText(item.title[0]) : "Unknown";
+          const information =
+            item.description && item.description[0]
+              ? cleanText(item.description[0])
+              : "Unknown";
+          let mediaUrl = (await getMedia(item, source.url)) || "Unknown";
+          const articleUrl =
+            item.link && item.link[0] ? cleanText(item.link[0]) : "Unknown";
+          const sourceName = source.name || "Unknown";
+          const sourceUrl = source.url || "Unknown";
+          const sourceFavicon = source.favicon;
+
+          const formattedArticle = {
+            title,
+            description: information,
+            mediaUrl,
+            articleUrl,
+            sourceName,
+            category,
+            sourceUrl,
+            pubDate,
+            sourceFavicon,
+          };
+
+          articles.push(formattedArticle);
         }
-
-        const pubDate = new Date(pubDateString);
-
-        if (isNaN(pubDate.getTime()) || pubDate < twoDaysAgo) {
-          continue; // Skip articles older than 48 hours or with invalid date
-        }
-
-        const title =
-          item.title && item.title[0] ? cleanText(item.title[0]) : "Unknown";
-        const information =
-          item.description && item.description[0]
-            ? cleanText(item.description[0])
-            : "Unknown";
-        let mediaUrl = (await getMedia(item, source.url)) || "Unknown";
-        const articleUrl =
-          item.link && item.link[0] ? cleanText(item.link[0]) : "Unknown";
-        const sourceName = source.name || "Unknown";
-        const sourceUrl = source.url || "Unknown";
-        const sourceFavicon = source.favicon;
-
-        const formattedArticle = {
-          title,
-          description: information,
-          mediaUrl,
-          articleUrl,
-          sourceName,
-          category,
-          sourceUrl,
-          pubDate,
-          sourceFavicon,
-        };
-
-        articles.push(formattedArticle);
       }
     } catch (error) {
       console.error(
@@ -122,8 +125,9 @@ function shuffleArray(array) {
   }
 }
 
-async function getArticlesFromCategories() {
-  let allArticles = [];
+async function getArticlesFromCategories(viralContent) {
+  console.log("VIRAL CONTENT ON ARTICLE ", viralContent[0], viralContent[60])
+  let allArticles = [...viralContent];
 
   for (const category in newsSources) {
     if (newsSources.hasOwnProperty(category)) {

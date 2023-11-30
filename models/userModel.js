@@ -35,7 +35,7 @@ const userSchema = new Schema({
       type: String,
       default: "default",
     },
-    newsCategories: {
+    newsSources: {
       type: [String],
       default: [],
       required: false,

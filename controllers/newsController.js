@@ -3,11 +3,14 @@ const News = require("../models/newsModel");
 const {
   getArticlesFromCategories,
   getArticlesByPage,
-} = require("../news/getArticles");
+} = require("../timeline/getArticles");
+const { newsSources } = require("../timeline/newsSources");
+const { getViralContent, getViralSources } = require("../timeline/viralUtils");
 
 const updateDatabaseNews = async () => {
-  console.log("updating news");
-  const newArticles = await getArticlesFromCategories();
+  console.log("Updating timeline ...");
+  const viralContent = await getViralContent();
+  const newArticles = await getArticlesFromCategories(viralContent);
 
   // Update or create news data
   const newsData = await News.findOneAndUpdate(
@@ -23,7 +26,10 @@ const getUserNews = async (req, res) => {
     const user = await User.findById(req.user._id);
     const page = parseInt(req.params.page) || 1;
 
-    const userNewsCategories = user.preferences.newsCategories || [];
+    const userNewsSources = user.preferences.newsSources || []; //Default sources here ?
+    const userNewsSourcesLowercase = userNewsSources.map((source) =>
+      source.toLowerCase()
+    );
 
     let newsData = await News.findOne();
 
@@ -34,22 +40,20 @@ const getUserNews = async (req, res) => {
       newsData = await updateDatabaseNews();
     }
 
-    let articlesFromUserCategories;
+    let articlesFromUserSources;
 
-    if (userNewsCategories.length > 0) {
-      articlesFromUserCategories = newsData.articles.filter((article) =>
-        userNewsCategories.includes(article.category)
-      );
+    if (userNewsSourcesLowercase.length > 0) {
+      articlesFromUserSources = newsData.articles.filter((article) => {
+        return userNewsSourcesLowercase.includes(
+          article.sourceName.toLowerCase()
+        );
+      });
     } else {
-      articlesFromUserCategories = newsData.articles;
+      articlesFromUserSources = newsData.articles;
     }
 
-    const articlesToReturn = getArticlesByPage(
-      articlesFromUserCategories,
-      page
-    );
+    const articlesToReturn = getArticlesByPage(articlesFromUserSources, page);
 
-    // Send the news data to the client
     res.status(200).json(articlesToReturn);
   } catch (error) {
     console.error(error);
@@ -57,6 +61,46 @@ const getUserNews = async (req, res) => {
   }
 };
 
+const getNewsSources = async (req, res) => {
+  try {
+    const viralSources = await getViralSources();
+    const formattedSources = [viralSources];
+    for (const category in newsSources) {
+      const sources = newsSources[category].map((source) => ({
+        name: source.name,
+        URL: new URL(source.url).hostname, // Extracts the hostname from the URL
+        favicon: source.favicon,
+      }));
+
+      formattedSources.push({ category, sources });
+    }
+
+    res.status(200).json(formattedSources);
+  } catch (error) {
+    res.status(500).send("An error occurred while fetching news.");
+  }
+};
+
+const updateUserSources = async (req, res) => {
+  const { userNewsSources } = req.body;
+  if (!userNewsSources) {
+    res.status(400).json({ message: "userNewsSources required in body" });
+  }
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
+    }
+    user.preferences.newsSources = userNewsSources;
+    await user.save();
+    res.status(200).json({ preferences: user.preferences });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
 module.exports = {
   getUserNews,
+  getNewsSources,
+  updateUserSources,
 };
