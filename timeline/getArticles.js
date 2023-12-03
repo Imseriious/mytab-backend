@@ -74,7 +74,7 @@ async function getCategoryArticles(category) {
     return articles;
   }
 
-  const twoDaysAgo = new Date(Date.now() - 72 * 60 * 60 * 1000); // 48 hours ago
+  const twoDaysAgo = new Date(Date.now() - 48 * 60 * 60 * 1000); // 48 hours ago
 
   for (const source of newsSources[category]) {
     try {

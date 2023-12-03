@@ -6,7 +6,7 @@ const getBookmarkIconUrl = require("../utils/getFaviconFromUrl");
 const getWebsiteInfo = require("../utils/getWebsiteInfo");
 
 const addBookmark = async (req, res) => {
-  let { name, url, folderId, faviconUrl } = req.body;
+  let { name, url, folderId, faviconUrl, timeline } = req.body;
 
   let currentFolderName;
   if (!url) {
@@ -19,6 +19,22 @@ const addBookmark = async (req, res) => {
     const folder = await Folder.findById(folderId);
     if (folder) {
       currentFolderName = folder.name;
+    }
+  }
+
+  if (timeline) {
+    const timelineFolder = await Folder.findOne({ name: "Timeline" });
+    if (!timelineFolder) {
+      const newTimelineFolder = new Folder({
+        name: "Timeline",
+        userId: req.user._id,
+      });
+      await newTimelineFolder.save();
+      folderId = newTimelineFolder._id;
+      currentFolderName = newTimelineFolder.name;
+    } else {
+      folderId = timelineFolder._id;
+      currentFolderName = timelineFolder.name;
     }
   }
 
