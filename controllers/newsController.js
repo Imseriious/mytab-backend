@@ -41,13 +41,17 @@ const getUserNews = async (req, res) => {
     }
 
     let articlesFromUserSources;
-
     if (userNewsSourcesLowercase.length > 0) {
       articlesFromUserSources = newsData.articles.filter((article) => {
-        return userNewsSourcesLowercase.includes(
-          article.sourceName.toLowerCase()
-        );
+        if (article && article !== null) {
+          return userNewsSourcesLowercase.includes(
+            article.sourceName.toLowerCase()
+          );
+        }
       });
+      if (!articlesFromUserSources) {
+        articlesFromUserSources = [];
+      }
     } else {
       articlesFromUserSources = newsData.articles;
     }

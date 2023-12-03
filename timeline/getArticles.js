@@ -5,6 +5,7 @@ const getFaviconFromUrl = require("../utils/getFaviconFromUrl");
 
 function cleanText(text) {
   if (!text) return "Unknown";
+  if (typeof text !== "string") return "Unknown";
 
   return text
     .replace(/<\/?[^>]+(>|$)/g, "") // Remove HTML tags
@@ -15,7 +16,6 @@ function cleanText(text) {
 }
 
 const getMedia = async (item, sourceUrl) => {
-  // Check for media URL in 'media:content' and 'media:thumbnail' tags
   let mediaUrl;
   if (
     item["media:content"] &&
@@ -30,7 +30,6 @@ const getMedia = async (item, sourceUrl) => {
   ) {
     mediaUrl = item["media:thumbnail"][0].$.url;
   } else if (item.enclosure && item.enclosure[0] && item.enclosure[0].$.url) {
-    // Fallback to 'enclosure' tag if 'media:content' and 'media:thumbnail' are not available
     mediaUrl = item.enclosure[0].$.url;
   } else if (item["content:encoded"]) {
     const contentEncoded = item["content:encoded"][0];
@@ -40,6 +39,29 @@ const getMedia = async (item, sourceUrl) => {
     if (match && match[1]) {
       mediaUrl = match[1];
     }
+  }
+
+  if (item.description && item.description[0]) {
+    let descriptionContent = item.description[0];
+
+    // Check if description is enclosed in CDATA and parse accordingly
+    if (typeof descriptionContent === "object" && descriptionContent._) {
+      descriptionContent = descriptionContent._;
+    }
+
+    if (typeof descriptionContent === "string") {
+      const imgRegex = /<img[^>]+src="([^">]+)"/g;
+      const match = imgRegex.exec(descriptionContent);
+
+      if (match && match[1]) {
+        mediaUrl = match[1];
+      }
+    }
+  }
+
+  // Handle relative URLs
+  if (mediaUrl && !mediaUrl.startsWith("http")) {
+    mediaUrl = new URL(mediaUrl, sourceUrl).href;
   }
 
   return mediaUrl;
@@ -58,10 +80,21 @@ async function getCategoryArticles(category) {
     try {
       const response = await axios.get(source.rssUrl);
       const result = await xml2js.parseStringPromise(response.data);
-      const items = result.rss.channel[0].item;
-      if (!items) {
-        console.log("No items ? ", source);
+
+      let items;
+
+      // Check if the feed is RSS format
+      if (result.rss && result.rss.channel) {
+        items = result.rss.channel[0].item;
       }
+      // Check if the feed is Atom format
+      else if (result.feed && result.feed.entry) {
+        items = result.feed.entry;
+      } else {
+        console.log("Unknown feed format for source:", source);
+        continue;
+      }
+
       if (items) {
         for (let i = 0; i < items.length; i++) {
           const item = items[i];
@@ -126,7 +159,6 @@ function shuffleArray(array) {
 }
 
 async function getArticlesFromCategories(viralContent) {
-  console.log("VIRAL CONTENT ON ARTICLE ", viralContent[0], viralContent[60])
   let allArticles = [...viralContent];
 
   for (const category in newsSources) {
