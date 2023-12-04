@@ -25,10 +25,20 @@ const userSchema = new Schema({
     default: [],
     required: false,
   },
+  completedOnboarding: {
+    type: Boolean,
+    default: false,
+    required: false,
+  },
   preferences: {
     wallpaperCollection: {
       type: String,
       default: "default",
+    },
+    newsSources: {
+      type: [String],
+      default: [],
+      required: false,
     },
     theme: {
       style: {
@@ -96,9 +106,14 @@ const userSchema = new Schema({
 });
 
 // Static signup method
-userSchema.statics.signup = async function (email, password, inviteCode) {
+userSchema.statics.signup = async function (
+  email,
+  password,
+  username,
+  inviteCode
+) {
   // Validation
-  if (!email || !password || !inviteCode) {
+  if (!email || !password || !inviteCode || !username) {
     throw Error("All fields are required");
   }
 
@@ -124,18 +139,23 @@ userSchema.statics.signup = async function (email, password, inviteCode) {
     throw Error("Please use a stronger password");
   }
 
-  const exists = await this.findOne({ email });
+  const existsEmail = await this.findOne({ email });
 
-  if (exists) {
+  const existsUsername = await this.findOne({ username });
+
+  if (existsEmail) {
     throw Error("Email already in use, please login");
+  }
+
+  if (existsUsername) {
+    throw Error("Username in already taken");
   }
 
   const salt = await bcrypt.genSalt(10);
   const hash = await bcrypt.hash(password, salt);
-
   const user = await this.create({
     email,
-    username: email,
+    username: username,
     password: hash,
   });
 

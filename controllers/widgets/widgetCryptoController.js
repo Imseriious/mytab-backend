@@ -27,12 +27,6 @@ const getCryptoLogo = async (ids) => {
 
 const getCryptoInfo = async (req, res) => {
   try {
-    const selectedSymbols = req.query.selectedSymbols;
-
-    if (!selectedSymbols || selectedSymbols.length < 1) {
-      return res.status(200).json([]); // Send an empty array response and terminate function
-    }
-
     const topCryptoSymbolsString = topCryptoSymbols.join(",");
 
     // Check for existing data in the database
@@ -42,11 +36,8 @@ const getCryptoInfo = async (req, res) => {
 
     if (cryptoData && cryptoData.lastFetched > halfHourAgo) {
       // If data is up-to-date, filter for the requested symbols
-      formattedData = cryptoData.coins.filter((coin) =>
-        selectedSymbols.includes(coin.symbol)
-      );
+      formattedData = cryptoData.coins;
     } else {
-
       const url =
         "https://pro-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest";
       const params = {
@@ -75,6 +66,11 @@ const getCryptoInfo = async (req, res) => {
       formattedData = Object.keys(coinsData).map((key) => {
         const coin = coinsData[key][0];
         const coinPrice = coin.quote.USD.price;
+        const coinPriceChange1H = coin.quote.USD.percent_change_1h;
+        const coinPriceChange24H = coin.quote.USD.percent_change_24h;
+        const coinPriceChange7D = coin.quote.USD.percent_change_7d;
+        const coinPriceChange30D = coin.quote.USD.percent_change_30d;
+        const coinMarketCap = coin.quote.USD.market_cap;
         const coinName = coin.name;
         const coinSlug = coin.slug;
         const coinLogo =
@@ -85,6 +81,11 @@ const getCryptoInfo = async (req, res) => {
         return {
           symbol: key,
           price: coinPrice,
+          coinPriceChange1H,
+          coinPriceChange24H,
+          coinPriceChange7D,
+          coinPriceChange30D,
+          coinMarketCap,
           name: coinName,
           convert: params.convert,
           logo: coinLogo,
@@ -106,9 +107,7 @@ const getCryptoInfo = async (req, res) => {
     }
 
     // Filter the formatted data to return only the selected symbols
-    const returnData = formattedData.filter((data) =>
-      selectedSymbols.includes(data.symbol)
-    );
+    const returnData = formattedData;
 
     res.status(200).json(returnData);
   } catch (error) {

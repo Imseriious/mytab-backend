@@ -9,7 +9,7 @@ const getTweetsFromTrend = async (trend) => {
     url: "https://twitter154.p.rapidapi.com/hashtag/hashtag",
     params: {
       hashtag: formattedHasthtag,
-      limit: "3",
+      limit: "5",
       section: "top",
     },
     headers: {
@@ -23,10 +23,16 @@ const getTweetsFromTrend = async (trend) => {
     const trendTweetsResult = response.data.results;
     const formattedTrendTweets = trendTweetsResult.map((tweet) => {
       return {
-        trend: trend,
-        url: tweet.expanded_url,
-        text: tweet.text,
-        media: tweet.media_url[0] && tweet.media_url[0],
+        title: trend,
+        description: tweet.text || "",
+        articleUrl: tweet.expanded_url,
+        mediaUrl: tweet.media_url[0] && tweet.media_url[0],
+        pubDate: tweet.creation_date,
+        sourceName: "Twitter Trending",
+        sourceFavicon:
+          "https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://twitter.com&size=64",
+        sourceUrl: "https://www.x.com",
+        category: "Viral",
       };
     });
     return formattedTrendTweets;
