@@ -55,6 +55,7 @@ const loginUser = async (req, res) => {
       extensionToken,
       email,
       userId: user._id,
+      completedOnboarding: false,
       preferences: user.preferences,
       username: user.username,
     });
@@ -79,6 +80,7 @@ const signupUser = async (req, res) => {
     const extensionToken = createExtensionToken(user._id);
     const refreshToken = createRefreshToken(user._id);
     const userPreferences = user.preferences;
+    const completedOnboarding = user.completedOnboarding;
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
@@ -92,6 +94,7 @@ const signupUser = async (req, res) => {
       extensionToken,
       email,
       userId: user._id,
+      completedOnboarding,
       username: username,
       preferences: userPreferences,
     });
@@ -154,6 +157,24 @@ const updateSidebarItemsOrder = async (req, res) => {
     await user.save();
 
     res.status(200).json({ preferences: user.preferences });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+// Completed onboarding
+const completeUserOnboarding = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
+    }
+
+    user.completedOnboarding = true;
+    await user.save();
+
+    res.status(200).json({ message: "Onboarding completed" });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
@@ -308,4 +329,5 @@ module.exports = {
   updateUserThemeColor,
   updateUserBlurStyle,
   collapsedBookmarks,
+  completeUserOnboarding,
 };
