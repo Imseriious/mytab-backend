@@ -434,7 +434,7 @@ const newsSources = {
   travel: [
     {
       rssUrl: "https://www.dailymail.co.uk/travel/index.rss",
-      name: "Dailymail Travel ",
+      name: "Dailymail Travel",
       url: "https://dailymail.co.uk",
       favicon:
         "https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://dailymail.co.uk&size=64",

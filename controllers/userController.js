@@ -110,23 +110,23 @@ const updateUsername = async (req, res) => {
 
   try {
     if (!username) {
-      res.status(400).json({ error: "Username is required" });
+      return res.status(400).json({ error: "Username is required" });
     }
 
     if (username.length < 3) {
-      res.status(400).json({ error: "Username is too short" });
+      return res.status(400).json({ error: "Username is too short" });
     }
 
     const userNameExists = await User.findOne({ username });
 
     if (userNameExists) {
-      res.status(400).json({ error: "Username is already in use" });
+      return res.status(400).json({ error: "Username is already in use" });
     }
 
     const user = await User.findById(req.user._id);
 
     if (!user) {
-      res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ message: "User not found" });
     }
 
     user.username = username;

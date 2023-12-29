@@ -1,5 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const cron = require("node-cron");
 
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
@@ -7,6 +8,9 @@ const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 
 require("dotenv").config();
+
+const { updateDatabaseNews } = require("./timeline/utils");
+const News = require("./models/newsModel");
 
 //Import Routes
 const userRoutes = require("./routes/userRoutes");
@@ -96,3 +100,29 @@ app.use("/spotify", spotifyRoutes);
 // Start the server
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Listening on port ${port}...`));
+
+cron.schedule("0 1 * * *", async () => {
+  try {
+    console.log("Scheduled update of news...");
+    await updateDatabaseNews();
+  } catch (error) {
+    console.error("Error during scheduled news update:", error);
+  }
+});
+
+const checkAndUpdateNewsOnStartup = async () => {
+  let newsData = await News.findOne();
+
+  if (
+    !newsData ||
+    newsData.newsDate.toDateString() !== new Date().toDateString()
+  ) {
+    console.log("Updating news on server startup...");
+    await updateDatabaseNews();
+  } else {
+    console.log("News are recent, won't update")
+  }
+};
+
+// Call this function when your server starts
+checkAndUpdateNewsOnStartup();

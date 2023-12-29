@@ -4,7 +4,20 @@ const User = require("../models/userModel");
 const getAllRooms = async (req, res) => {
   try {
     const rooms = await SpeakUpRoom.find({});
-    res.status(200).json(rooms);
+    const roomsWithUsernamePosts = await Promise.all(
+      rooms.map(async (room) => {
+        const postsWithUsernames = await Promise.all(
+          room.posts.map(async (post) => {
+            const postUser = await User.findById(post.userId);
+            return { ...post.toObject(), username: postUser?.username };
+          })
+        );
+
+        return { ...room.toObject(), posts: postsWithUsernames };
+      })
+    );
+
+    res.status(200).json(roomsWithUsernamePosts);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to fetch rooms" });
