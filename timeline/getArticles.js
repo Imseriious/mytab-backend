@@ -141,10 +141,13 @@ async function getCategoryArticles(category) {
         }
       }
     } catch (error) {
-      console.error(
-        `Error fetching or parsing feed from ${source.name}:`,
-        error
-      );
+      console.error(`Error fetching or parsing feed from ${source.name}`);
+      if (error.response) {
+        console.error(
+          `Status: ${error.response.status} - ${error.response.statusText}`
+        );
+      }
+      continue;
     }
   }
 

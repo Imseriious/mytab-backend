@@ -11,6 +11,7 @@ const {
   updateUserThemeColor,
   updateUserBlurStyle,
   collapsedBookmarks,
+  completeUserOnboarding,
 } = require("../controllers/userController");
 const requireAuth = require("../middleware/requireAuth");
 
@@ -47,6 +48,9 @@ router.post(
 
 //Update Theme color
 router.post("/theme_color", requireAuth, updateUserThemeColor);
+
+//Complete user onboarding
+router.post("/complete_user_onboarding", requireAuth, completeUserOnboarding);
 
 //Update Blur style
 router.post("/blur_style", requireAuth, updateUserBlurStyle);

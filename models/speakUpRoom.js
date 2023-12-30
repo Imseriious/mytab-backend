@@ -13,7 +13,6 @@ const voteSchema = new mongoose.Schema({
 
 const postSchema = new mongoose.Schema(
   {
-    username: { type: String, required: true },
     pubDate: { type: Date, default: Date.now },
     votes: { type: Number, default: 1 },
     text: { type: String, required: true },

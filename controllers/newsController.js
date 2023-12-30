@@ -1,25 +1,8 @@
 const User = require("../models/userModel");
 const News = require("../models/newsModel");
-const {
-  getArticlesFromCategories,
-  getArticlesByPage,
-} = require("../timeline/getArticles");
+const { getArticlesByPage } = require("../timeline/getArticles");
 const { newsSources } = require("../timeline/newsSources");
-const { getViralContent, getViralSources } = require("../timeline/viralUtils");
-
-const updateDatabaseNews = async () => {
-  console.log("Updating timeline ...");
-  const viralContent = await getViralContent();
-  const newArticles = await getArticlesFromCategories(viralContent);
-
-  // Update or create news data
-  const newsData = await News.findOneAndUpdate(
-    {},
-    { articles: newArticles, newsDate: new Date() },
-    { upsert: true, new: true }
-  );
-  return newsData;
-};
+const { getViralSources } = require("../timeline/viralUtils");
 
 const getUserNews = async (req, res) => {
   try {
@@ -33,12 +16,12 @@ const getUserNews = async (req, res) => {
 
     let newsData = await News.findOne();
 
-    if (
-      !newsData ||
-      newsData.newsDate.toDateString() !== new Date().toDateString()
-    ) {
-      newsData = await updateDatabaseNews();
+    if (!newsData) {
+      console.log("No news data available");
+      res.status(500).send("No news data available");
+      return;
     }
+
 
     let articlesFromUserSources;
     if (userNewsSourcesLowercase.length > 0) {
