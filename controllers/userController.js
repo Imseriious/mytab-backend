@@ -55,7 +55,7 @@ const loginUser = async (req, res) => {
       extensionToken,
       email,
       userId: user._id,
-      completedOnboarding: false,
+      completedOnboarding: user.completedOnboarding,
       preferences: user.preferences,
       username: user.username,
     });
