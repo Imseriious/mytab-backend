@@ -17,7 +17,7 @@ const getYoutubePopular = async () => {
     const response = await axios.request(options);
     const formattedOptions = response.data.map((option) => ({
       title: option.title,
-      description: option.description || "",
+      description: option.channelName || "",
       articleUrl: option.videoUrl,
       mediaUrl: option.thumbnails[1].url,
       pubDate: option.publishedDate,
@@ -25,7 +25,7 @@ const getYoutubePopular = async () => {
       sourceFavicon:
         "https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://youtube.com&size=64",
       sourceUrl: "https://www.youtube.com",
-      category: "Viral",
+      category: "youtube",
     }));
     return formattedOptions;
   } catch (error) {
@@ -109,8 +109,8 @@ const getRedditPopular = async () => {
         const subredditMatch = post.permalink.match(/\/r\/(.*?)\//);
         const subreddit = subredditMatch[1];
         return {
-          title: `r/${subreddit}`,
-          description: post.title || "",
+          title: post.title || "",
+          description: `r/${subreddit}`,
           articleUrl: post.permalink,
           mediaUrl:
             post.preview?.url ||
@@ -122,7 +122,7 @@ const getRedditPopular = async () => {
           sourceFavicon:
             "https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://reddit.com&size=64",
           sourceUrl: "https://www.reddit.com",
-          category: "Viral",
+          category: "reddit",
         };
       });
 
