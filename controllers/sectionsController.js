@@ -30,7 +30,7 @@ const getSectionContent = async (req, res) => {
       });
 
       const itemsWithPrice = await Promise.all(itemsWithPricePromises);
-      section.items = itemsWithPrice; // Now 'section.items' contains the updated items with prices
+      section.items = itemsWithPrice;
       res.status(200).send(section);
     } else {
       res.status(200).send(section);
