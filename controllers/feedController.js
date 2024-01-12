@@ -20,7 +20,7 @@ const getFeedCategoryHot = async (req, res) => {
       return;
     }
 
-    const limit = 5;
+    const limit = 4;
 
     const resultArticles = filteredArticles.slice(0, limit);
 
