@@ -24,6 +24,8 @@ const assistantRoutes = require("./routes/assistantRoutes");
 const profileRoutes = require("./routes/profileRoutes");
 const newsRouter = require("./routes/newsRoutes");
 const speakUpRoutes = require("./routes/speakUpRoutes");
+const feedRoutes = require("./routes/feedRoutes");
+const sectionRoutes = require("./routes/sectionsRoutes");
 
 //Import Widget Routes
 const widgetQuotesRoutes = require("./routes/widgets/widgetQuotesRoutes");
@@ -56,8 +58,8 @@ app.set("trust proxy", 1);
 
 // Rate Limiting
 const limiter = rateLimit({
-  windowMs: 1 * 60 * 1000, // 5 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
+  windowMs: 1 * 60 * 1000,
+  max: 200, // limit each IP to 100 requests per windowMs
 });
 
 // Apply to all requests
@@ -90,6 +92,8 @@ app.use("/assistant", assistantRoutes);
 app.use("/profile", profileRoutes);
 app.use("/news", newsRouter);
 app.use("/speakup/", speakUpRoutes);
+app.use("/feed/", feedRoutes);
+app.use("/sections/", sectionRoutes);
 
 // Use Widget Routes
 app.use("/widgetquotes", widgetQuotesRoutes);
