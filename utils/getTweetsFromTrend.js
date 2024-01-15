@@ -32,7 +32,7 @@ const getTweetsFromTrend = async (trend) => {
         sourceFavicon:
           "https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://twitter.com&size=64",
         sourceUrl: "https://www.x.com",
-        category: "Viral",
+        category: "x",
       };
     });
     return formattedTrendTweets;

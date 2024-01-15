@@ -66,7 +66,10 @@ async function talkAssistant(req, res) {
     const maxAttempts = 10;
     let attempts = 0;
 
-    while (runStatus.status !== "completed" && attempts < maxAttempts) {
+    while (
+      (runStatus.status !== "completed" && attempts < maxAttempts) ||
+      runStatus.status == "in_progress"
+    ) {
       await new Promise((resolve) => setTimeout(resolve, 2000));
       runStatus = await openai.beta.threads.runs.retrieve(threadId, run.id);
       attempts++;
@@ -75,10 +78,6 @@ async function talkAssistant(req, res) {
     if (runStatus.status === "completed") {
       const messages = await openai.beta.threads.messages.list(threadId);
       res.json(messages.data);
-    } else {
-      res
-        .status(202)
-        .json({ message: "Run is still in progress or timed out" });
     }
   } catch (error) {
     res.status(500).json({ error: error.message });
