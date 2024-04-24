@@ -1,18 +1,73 @@
+const { v4: uuidv4 } = require("uuid"); // Import UUID version 4
+
 const Memory = require("../models/memoryModel");
 const User = require("../models/userModel");
 
+const getBookmarkIconUrl = require("../utils/getFaviconFromUrl");
+const getWebsiteInfo = require("../utils/getWebsiteInfo");
+
+// ---NOTES---
+// TODO: Register Click on Memory Item (custom attributes: cliked)
+// TODO: Tags
+// TODO: Screenshot
+
 const createBookmark = async (req, res) => {
   const userId = req.user._id;
+  let { name, url, type, description } = req.body;
 
-  const bookmarkData = {
-    date_added: "13355356361664437",
-    date_last_used: "13355356722085468",
-    guid: "a23a4586-7a3c-4be9-b851-6b43c14b34ae",
-    id: "832",
-    name: "(31) Linux for Hackers Tutorial (And Free Courses) - YouTube",
-    type: "url",
-    url: "https://www.youtube.com/watch?v=YJUVNlmIO6E&t=1s",
-  };
+  if (type !== "folder" && !url) {
+    return res.status(400).json({ error: "URL is required" });
+  }
+
+  if (!type) {
+    return res.status(400).json({ error: "Type is required" });
+  }
+
+  if (type == "folder" && !name) {
+    return res.status(400).json({ error: "Folders require a name" });
+  }
+
+  let iconUrl;
+  let websiteDescription;
+
+  if (type == "url") {
+    iconUrl = await getBookmarkIconUrl(url);
+    if (!description || !name) {
+      websiteDescription = await getWebsiteInfo(url);
+      name = websiteDescription.title;
+      description = websiteDescription.description || websiteDescription.title;
+    }
+  }
+
+  const nowTimestamp = new Date().getTime(); // Get current timestamp
+
+  let bookmarkData;
+
+  if (type == "url") {
+    bookmarkData = {
+      date_added: nowTimestamp,
+      date_last_used: nowTimestamp,
+      custom_id: uuidv4(),
+      name: name,
+      type: type,
+      url: url,
+      customAttributes: {
+        description,
+        iconUrl,
+      },
+    };
+  } else if (type == "folder") {
+    bookmarkData = {
+      date_added: nowTimestamp,
+      date_last_used: nowTimestamp,
+      custom_id: uuidv4(),
+      name: name,
+      type: type,
+      customAttributes: {
+        description,
+      },
+    };
+  }
 
   try {
     const user = await User.findById(userId);
@@ -46,6 +101,33 @@ const createBookmark = async (req, res) => {
   }
 };
 
+const getUserBookmarks = async (req, res) => {
+  const userId = req.user._id; // Assuming user ID is attached to request by authentication middleware
+
+  try {
+    // Check if the user exists
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Retrieve the memory for the user
+    const memory = await Memory.findOne({ userId });
+    if (!memory) {
+      return res
+        .status(404)
+        .json({ message: "No bookmarks found for this user" });
+    }
+
+    // Return the bookmarks array if the memory exists
+    res.status(200).json({ bookmarks: memory.bookmarks });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to retrieve bookmarks" });
+  }
+};
+
 module.exports = {
   createBookmark,
+  getUserBookmarks,
 };
