@@ -78,7 +78,7 @@ mongoose
     useUnifiedTopology: true,
   })
   .then(() => console.log("Connected to MongoDB"))
-  .catch((err) => console.error("Could not connect to MongoDB...", err));
+  .catch((err) => console.error("Could not connect to MongoDB...", err.message));
 
 // Use routes
 app.use("/user", userRoutes);
@@ -114,19 +114,19 @@ cron.schedule("0 1 * * *", async () => {
   }
 });
 
-const checkAndUpdateNewsOnStartup = async () => {
-  let newsData = await News.findOne();
+// const checkAndUpdateNewsOnStartup = async () => {
+//   let newsData = await News.findOne();
 
-  if (
-    !newsData ||
-    newsData.newsDate.toDateString() !== new Date().toDateString()
-  ) {
-    console.log("Updating news on server startup...");
-    await updateDatabaseNews();
-  } else {
-    console.log("News are recent, won't update")
-  }
-};
+//   if (
+//     !newsData ||
+//     newsData.newsDate.toDateString() !== new Date().toDateString()
+//   ) {
+//     console.log("Updating news on server startup...");
+//     await updateDatabaseNews();
+//   } else {
+//     console.log("News are recent, won't update")
+//   }
+// };
 
-// Call this function when your server starts
-checkAndUpdateNewsOnStartup();
+// // Call this function when your server starts
+// checkAndUpdateNewsOnStartup();
