@@ -26,6 +26,7 @@ const newsRouter = require("./routes/newsRoutes");
 const speakUpRoutes = require("./routes/speakUpRoutes");
 const feedRoutes = require("./routes/feedRoutes");
 const sectionRoutes = require("./routes/sectionsRoutes");
+const memoryRoutes = require("./routes/memoryRoutes");
 
 //Import Widget Routes
 const widgetQuotesRoutes = require("./routes/widgets/widgetQuotesRoutes");
@@ -94,6 +95,7 @@ app.use("/news", newsRouter);
 app.use("/speakup/", speakUpRoutes);
 app.use("/feed/", feedRoutes);
 app.use("/sections/", sectionRoutes);
+app.use("/memory/", memoryRoutes);
 
 // Use Widget Routes
 app.use("/widgetquotes", widgetQuotesRoutes);
