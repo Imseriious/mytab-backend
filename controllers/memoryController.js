@@ -127,7 +127,93 @@ const getUserBookmarks = async (req, res) => {
   }
 };
 
+const deleteBookmark = async (req, res) => {
+  const userId = req.user._id;
+  const { custom_id } = req.params;  // Assuming custom_id is passed as a URL parameter
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const memory = await Memory.findOne({ userId });
+    if (!memory) {
+      return res.status(404).json({ error: "Memory not found" });
+    }
+
+    // Find and remove the bookmark from the memory
+    const bookmarkIndex = memory.bookmarks.findIndex(bookmark => bookmark.custom_id === custom_id);
+    if (bookmarkIndex === -1) {
+      return res.status(404).json({ error: "Bookmark not found" });
+    }
+
+    // Remove the bookmark
+    memory.bookmarks.splice(bookmarkIndex, 1);
+
+    // Save the updated memory
+    await memory.save();
+
+    res.status(200).json({ message: "Bookmark deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to delete bookmark" });
+  }
+};
+
+const updateBookmark = async (req, res) => {
+  const userId = req.user._id;
+  const { custom_id } = req.params; 
+  const updates = req.body;  // Name, url, description
+  
+  if(!updates.name && !updates.url && !updates.description) {
+    return res.status(400).json({ error: "At least one field is required" });
+  }
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const memory = await Memory.findOne({ userId });
+    if (!memory) {
+      return res.status(404).json({ error: "Memory not found" });
+    }
+
+    const bookmark = memory.bookmarks.find(bookmark => bookmark.custom_id === custom_id);
+    if (!bookmark) {
+      return res.status(404).json({ error: "Bookmark not found" });
+    }
+
+    // Perform updates
+    if (updates.name) {
+      bookmark.name = updates.name;
+    }
+    if (updates.url && bookmark.type === "url") {
+      bookmark.url = updates.url;
+      // Optionally update the icon URL if you have such a function
+      bookmark.customAttributes.iconUrl = await getBookmarkIconUrl(updates.url);
+    }
+    if (updates.description) {
+      bookmark.customAttributes.description = updates.description;
+    }
+
+    // Save the updated memory
+    await memory.save();
+
+    res.status(200).json({ message: "Bookmark updated successfully", bookmark });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to update bookmark" });
+  }
+};
+
+
+
 module.exports = {
   createBookmark,
   getUserBookmarks,
+  deleteBookmark,
+  updateBookmark
 };
