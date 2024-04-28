@@ -5,15 +5,16 @@ const User = require("../models/userModel");
 
 const getBookmarkIconUrl = require("../utils/getFaviconFromUrl");
 const getWebsiteInfo = require("../utils/getWebsiteInfo");
+const { findParentBookmark } = require("./utils/memoryUtils");
 
 // ---NOTES---
 // TODO: Register Click on Memory Item (custom attributes: cliked)
 // TODO: Tags
 // TODO: Screenshot
 
-const createBookmark = async (req, res) => {
+const addBookmark = async (req, res) => {
   const userId = req.user._id;
-  let { name, url, type, description } = req.body;
+  let { name, url, type, description, parentId } = req.body;
 
   if (type !== "folder" && !url) {
     return res.status(400).json({ error: "URL is required" });
@@ -34,8 +35,12 @@ const createBookmark = async (req, res) => {
     iconUrl = await getBookmarkIconUrl(url);
     if (!description || !name) {
       websiteDescription = await getWebsiteInfo(url);
-      name = websiteDescription.title;
-      description = websiteDescription.description || websiteDescription.title;
+      if(!name) {
+        name = websiteDescription.title;
+      }
+      if(!description) {
+        description = websiteDescription.description || websiteDescription.title;
+      }
     }
   }
 
@@ -85,8 +90,18 @@ const createBookmark = async (req, res) => {
         bookmarks: [bookmarkData],
       });
     } else {
-      // Add the new bookmark to the existing memory
-      memory.bookmarks.push(bookmarkData);
+      if (parentId) {
+        // Find the parent bookmark
+        const parentBookmark = findParentBookmark(memory.bookmarks, parentId);
+        if (!parentBookmark) {
+          return res.status(404).json({ error: "Parent bookmark not found" });
+        }
+        // Add the new bookmark to the parent bookmark
+        parentBookmark.children.push(bookmarkData);
+        console.log(parentBookmark)
+      } else {
+        memory.bookmarks.push(bookmarkData);
+      }
     }
 
     // Save the updated or new memory
@@ -129,7 +144,7 @@ const getUserBookmarks = async (req, res) => {
 
 const deleteBookmark = async (req, res) => {
   const userId = req.user._id;
-  const { custom_id } = req.params;  // Assuming custom_id is passed as a URL parameter
+  const { custom_id } = req.params; // Assuming custom_id is passed as a URL parameter
 
   try {
     const user = await User.findById(userId);
@@ -143,7 +158,9 @@ const deleteBookmark = async (req, res) => {
     }
 
     // Find and remove the bookmark from the memory
-    const bookmarkIndex = memory.bookmarks.findIndex(bookmark => bookmark.custom_id === custom_id);
+    const bookmarkIndex = memory.bookmarks.findIndex(
+      (bookmark) => bookmark.custom_id === custom_id
+    );
     if (bookmarkIndex === -1) {
       return res.status(404).json({ error: "Bookmark not found" });
     }
@@ -163,10 +180,10 @@ const deleteBookmark = async (req, res) => {
 
 const updateBookmark = async (req, res) => {
   const userId = req.user._id;
-  const { custom_id } = req.params; 
-  const updates = req.body;  // Name, url, description
-  
-  if(!updates.name && !updates.url && !updates.description) {
+  const { custom_id } = req.params;
+  const updates = req.body; // Name, url, description
+
+  if (!updates.name && !updates.url && !updates.description) {
     return res.status(400).json({ error: "At least one field is required" });
   }
 
@@ -181,7 +198,9 @@ const updateBookmark = async (req, res) => {
       return res.status(404).json({ error: "Memory not found" });
     }
 
-    const bookmark = memory.bookmarks.find(bookmark => bookmark.custom_id === custom_id);
+    const bookmark = memory.bookmarks.find(
+      (bookmark) => bookmark.custom_id === custom_id
+    );
     if (!bookmark) {
       return res.status(404).json({ error: "Bookmark not found" });
     }
@@ -202,18 +221,18 @@ const updateBookmark = async (req, res) => {
     // Save the updated memory
     await memory.save();
 
-    res.status(200).json({ message: "Bookmark updated successfully", bookmark });
+    res
+      .status(200)
+      .json({ message: "Bookmark updated successfully", bookmark });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to update bookmark" });
   }
 };
 
-
-
 module.exports = {
-  createBookmark,
+  addBookmark,
   getUserBookmarks,
   deleteBookmark,
-  updateBookmark
+  updateBookmark,
 };

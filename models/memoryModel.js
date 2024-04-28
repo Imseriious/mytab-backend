@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const customAttributesSchema = new mongoose.Schema(
   {
     iconUrl: { type: String },
-    description: {type: String}
+    description: { type: String },
   },
   { _id: false }
 );
@@ -17,11 +17,12 @@ const bookmarkSchema = new mongoose.Schema(
     name: { type: String, required: true },
     type: { type: String, required: true, enum: ["url", "folder"] },
     url: { type: String },
-    children: [{ type: mongoose.Schema.Types.ObjectId, ref: "Bookmark" }],
     customAttributes: customAttributesSchema,
   },
   { _id: true }
 );
+
+bookmarkSchema.add({ children: [bookmarkSchema] });
 
 const memorySchema = new mongoose.Schema({
   userId: {
